@@ -13,11 +13,11 @@
         android:text="@string/main_settings"
         app:icon="@drawable/ic_arrow_back" />
 
-    <Switch
+
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/SwitchDayOrNight"
-        android:text="@string/settings_darkTheme"
-        tools:ignore="UseSwitchCompatOrMaterialXml"
-        style="@style/SettingsScreenSwitch"/>
+        style="@style/SettingsScreenSwitch"
+        android:text="@string/settings_darkTheme" />
 
     <Button
         android:id="@+id/ShareButton"
