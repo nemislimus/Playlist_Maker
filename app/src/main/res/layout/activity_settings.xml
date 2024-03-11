@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SettingsActivity"
+    style="@style/SettingsScreenLayout">
+
+    <Button
+        android:id="@+id/BackFromSettingsButton"
+        style="@style/SettingScreenButtonBase.BackToMainButton"
+        android:layout_marginBottom="24dp"
+        android:padding="0dp"
+        android:text="@string/main_settings"
+        app:icon="@drawable/ic_arrow_back" />
+
+    <Switch
+        android:id="@+id/SwitchDayOrNight"
+        android:text="@string/settings_darkTheme"
+        tools:ignore="UseSwitchCompatOrMaterialXml"
+        style="@style/SettingsScreenSwitch"/>
+
+    <Button
+        android:id="@+id/ShareButton"
+        android:text="@string/settings_share"
+        app:icon="@drawable/ic_share"
+        style="@style/SettingScreenButtonBase.MenuButtons" />
+
+    <Button
+        android:id="@+id/SupportCallButton"
+        android:text="@string/settings_support"
+        app:icon="@drawable/ic_support"
+        style="@style/SettingScreenButtonBase.MenuButtons" />
+
+    <Button
+        android:id="@+id/UserAcceptionButton"
+        android:text="@string/settings_userAcception"
+        app:icon="@drawable/arrow_forward"
+        style="@style/SettingScreenButtonBase.MenuButtons" />
+
+
+</LinearLayout>
