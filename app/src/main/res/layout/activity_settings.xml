@@ -6,36 +6,35 @@
     style="@style/SettingsScreenLayout">
 
     <Button
-        android:id="@+id/BackFromSettingsButton"
-        style="@style/SettingScreenButtonBase.BackToMainButton"
-        android:layout_marginBottom="24dp"
-        android:padding="0dp"
+        android:id="@+id/outOfSettingsButton"
+        style="@style/SettingScreenButtonOrigin.OutOfSettingsButton"
         android:text="@string/main_settings"
         app:icon="@drawable/ic_arrow_back" />
 
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/SwitchDayOrNight"
+    <Switch
+        android:id="@+id/switchTheme"
         style="@style/SettingsScreenSwitch"
-        android:text="@string/settings_darkTheme" />
+        android:text="@string/settings_darkTheme"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <Button
-        android:id="@+id/ShareButton"
+        android:id="@+id/shareButton"
+        style="@style/SettingScreenButtonOrigin"
         android:text="@string/settings_share"
-        app:icon="@drawable/ic_share"
-        style="@style/SettingScreenButtonBase.MenuButtons" />
+        app:icon="@drawable/ic_share" />
 
     <Button
-        android:id="@+id/SupportCallButton"
+        android:id="@+id/supportButton"
         android:text="@string/settings_support"
         app:icon="@drawable/ic_support"
-        style="@style/SettingScreenButtonBase.MenuButtons" />
+        style="@style/SettingScreenButtonOrigin" />
 
     <Button
-        android:id="@+id/UserAcceptionButton"
-        android:text="@string/settings_userAcception"
+        android:id="@+id/userAgreementButton"
+        android:text="@string/settings_userAgreement"
         app:icon="@drawable/arrow_forward"
-        style="@style/SettingScreenButtonBase.MenuButtons" />
+        style="@style/SettingScreenButtonOrigin" />
 
 
 </LinearLayout>

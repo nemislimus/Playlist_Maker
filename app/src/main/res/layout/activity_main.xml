@@ -4,32 +4,25 @@
     style="@style/MainScreenLayout">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="@string/main_title"
-        style="@style/MainScreenTextBase" />
+        style="@style/LogoTextMain" />
 
     <Button
-        android:id="@+id/SearchButton"
-        style="@style/MainScreenButtonBase"
+        android:id="@+id/searchButton"
+        style="@style/MainScreenButtons"
         android:layout_marginTop="40dp"
         android:text="@string/main_search"
         app:icon="@drawable/ic_search" />
 
     <Button
-        android:id="@+id/MediatekaButton"
-        style="@style/MainScreenButtonBase"
-        android:layout_marginTop="@dimen/main_layout_margin"
+        android:id="@+id/mediaButton"
+        style="@style/MainScreenButtons"
         android:text="@string/main_mediateka"
         app:icon="@drawable/ic_mediateka" />
 
     <Button
-        android:id="@+id/SettingsButton"
-        style="@style/MainScreenButtonBase"
-        android:layout_marginTop="@dimen/main_layout_margin"
+        android:id="@+id/settingsButton"
+        style="@style/MainScreenButtons"
         android:layout_marginBottom="28dp"
         android:text="@string/main_settings"
         app:icon="@drawable/ic_settings" />
