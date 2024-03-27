@@ -10,16 +10,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val mainSearchButton = findViewById<Button>(R.id.SearchButton)
-        val mainMediatekaButton = findViewById<Button>(R.id.MediatekaButton)
-        val mainSettingsButton = findViewById<Button>(R.id.SettingsButton)
-
-        // Объявление анонимного объекта слушателя для кнопки из центральной части ДЗ (спринт 8)
-//        val mediatekaButtonClickListener: View.OnClickListener = object: View.OnClickListener {
-//            override fun onClick(v: View?) {
-//                Toast.makeText(this@MainActivity, "Совершаем переход в Медиатеку!", Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        val mainSearchButton = findViewById<Button>(R.id.searchButton)
+        val mainMediatekaButton = findViewById<Button>(R.id.mediaButton)
+        val mainSettingsButton = findViewById<Button>(R.id.settingsButton)
 
         mainSearchButton.setOnClickListener {
             val clickOnSearchButton = Intent(this, SearchActivity::class.java)
