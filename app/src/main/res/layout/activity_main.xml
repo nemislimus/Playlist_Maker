@@ -12,7 +12,7 @@
         style="@style/MainScreenButtons"
         android:layout_marginTop="40dp"
         android:text="@string/main_search"
-        app:icon="@drawable/ic_search" />
+        app:icon="@drawable/ic_search_24" />
 
     <Button
         android:id="@+id/mediaButton"

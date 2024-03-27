@@ -27,16 +27,16 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-        // Просто по приколу для себя поискал и описал переключатель темы
-        switchTheme.setOnCheckedChangeListener { _, isChecked ->
-
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            recreate()
-        }
+//        // Просто по приколу для себя поискал и описал переключатель темы
+//        switchTheme.setOnCheckedChangeListener { _, isChecked ->
+//
+//            if (isChecked) {
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//            } else {
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//            }
+//            recreate()
+//        }
 
         // Шарим ссылку во все возможные приложения
         shareButton.setOnClickListener {

@@ -14,7 +14,7 @@
 
     <Switch
         android:id="@+id/switchTheme"
-        style="@style/SettingsScreenSwitch"
+        style="@style/SettingsScreenSwitch.theme"
         android:text="@string/settings_darkTheme"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 

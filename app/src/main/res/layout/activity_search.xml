@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
+    style="@style/SettingsScreenLayout"
+    android:orientation="vertical"
     tools:context=".SearchActivity">
 
-    <TextView
-        android:id="@+id/message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
+    <Button
+        android:id="@+id/outOfSearchButton"
+        style="@style/SettingScreenButtonOrigin.OutOfSettingsButton"
+        android:layout_marginBottom="8dp"
         android:text="@string/main_search"
-        android:textStyle="bold"
-        android:textSize="30sp"
-        android:textColor="@color/dark"/>
+        app:icon="@drawable/ic_arrow_back" />
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/searchBar"
+        style="@style/SearchBarContainer.theme">
+
+        <ImageView
+            android:id="@+id/zoomSearchBarIcon"
+            android:src="@drawable/ic_search_16"
+            android:paddingStart="@dimen/search_bar_side_padding"
+            style="@style/SearchIcons.theme"/>
+
+    <EditText
+        android:id="@+id/searchBarEditText"
+        style="@style/SearchEditText.theme"/>
+
+        <ImageView
+            android:id="@+id/searchBarClearIcon"
+            android:src="@drawable/ic_clear_16"
+            android:visibility="gone"
+            android:paddingEnd="@dimen/search_bar_side_padding"
+            style="@style/SearchIcons.theme"/>
+
+    </LinearLayout>
+
+</LinearLayout>

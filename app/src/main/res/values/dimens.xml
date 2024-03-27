@@ -3,4 +3,7 @@
     <dimen name="main_screen_text_size">22sp</dimen>
     <dimen name="settings_menu_text_size">16sp</dimen>
     <dimen name="button_classic_radius">16dp</dimen>
+    <dimen name="search_bar_side_padding">14dp</dimen>
+    <dimen name="search_bar_icon_padding">8dp</dimen>
+    <dimen name="search_bar_height">36dp</dimen>
 </resources>

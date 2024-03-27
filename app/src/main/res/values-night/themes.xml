@@ -10,7 +10,25 @@
         <item name="colorSecondary">@color/dark</item>
         <item name="colorSecondaryVariant">@color/white</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorSecondaryFixed">@color/blue_pale</item>
-        <item name="colorOnSecondaryFixed">@color/blue</item>
     </style>
+
+    <style name="SettingsScreenSwitch.theme">
+        <item name="android:checked">true</item>
+        <item name="android:thumbTint">@color/blue</item>
+        <item name="android:trackTint">@color/blue_pale</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="SearchIcons.theme">
+        <item name="tint">@color/dark</item>
+    </style>
+
+    <style name="SearchEditText.theme">
+        <item name="android:textColorHint">@color/dark</item>
+    </style>
+
+    <style name="SearchBarContainer.theme">
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+
 </resources>

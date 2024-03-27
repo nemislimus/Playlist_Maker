@@ -10,10 +10,27 @@
         <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/dark</item>
         <item name="colorOnSecondary">@color/grey</item>
-        <item name="colorSecondaryFixed">@color/grey_pale</item>
-        <item name="colorOnSecondaryFixed">@color/grey</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
+
+    <style name="SettingsScreenSwitch.theme">
+        <item name="android:checked">false</item>
+        <item name="android:thumbTint">@color/grey</item>
+        <item name="android:trackTint">@color/grey_pale</item>
+        <item name="android:textColor">@color/dark</item>
+    </style>
+
+    <style name="SearchIcons.theme">
+        <item name="tint">@color/grey</item>
+    </style>
+
+    <style name="SearchEditText.theme">
+        <item name="android:textColorHint">@color/grey</item>
+    </style>
+
+    <style name="SearchBarContainer.theme">
+        <item name="android:backgroundTint">@color/grey_pale</item>
+    </style>
 
 </resources>
