@@ -27,17 +27,6 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-//        // Просто по приколу для себя поискал и описал переключатель темы
-//        switchTheme.setOnCheckedChangeListener { _, isChecked ->
-//
-//            if (isChecked) {
-//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-//            } else {
-//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-//            }
-//            recreate()
-//        }
-
         // Шарим ссылку во все возможные приложения
         shareButton.setOnClickListener {
             val linkMessage = getString(R.string.link_share_android_dev)
@@ -46,14 +35,14 @@ class SettingsActivity : AppCompatActivity() {
                 putExtra(Intent.EXTRA_TEXT, linkMessage)
             }
 
-            val shareChooser = Intent.createChooser(shareIntent, "Укажите куда отправить ссылку:")
+            val shareChooser = Intent.createChooser(shareIntent, getString(R.string.where_send_link))
 
             try {
                 startActivity(shareChooser)
             } catch (_: ActivityNotFoundException) {
                 Toast.makeText(
                     this@SettingsActivity,
-                    "На устройстве нет приложений для отправки текста!",
+                    getString(R.string.no_apps_for_text_sending),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -72,14 +61,12 @@ class SettingsActivity : AppCompatActivity() {
             supportIntent.putExtra(Intent.EXTRA_TEXT, message)
             supportIntent.putExtra(Intent.EXTRA_EMAIL, email)
 
-//            supportIntent.data = Uri.parse("mailto:$email?subject=$messageTopic&body=$message")
-
-            try {
+        try {
                 startActivity(supportIntent)
             } catch (_: ActivityNotFoundException) {
                 Toast.makeText(
                     this@SettingsActivity,
-                    "На устройстве нет почтового клиента!",
+                    getString(R.string.no_apps_for_email),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -95,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
             } catch (_: ActivityNotFoundException) {
                 Toast.makeText(
                     this@SettingsActivity,
-                    "На устройстве нет браузера!",
+                    getString(R.string.no_browser_app),
                     Toast.LENGTH_LONG
                 ).show()
             }

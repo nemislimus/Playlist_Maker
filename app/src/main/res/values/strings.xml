@@ -13,4 +13,9 @@
     <string name="support_message_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="support_message_topic">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="support_email">nemislimus@yandex.ru</string>
+    <string name="where_send_link">Укажите куда отправить ссылку:</string>
+    <string name="no_apps_for_text_sending">На устройстве нет приложений для отправки текста!</string>
+    <string name="no_apps_for_email">На устройстве нет почтового клиента!</string>
+    <string name="no_browser_app">На устройстве нет браузера!</string>
+    <string name="search_bar_empty">Строка поиска пуста</string>
 </resources>

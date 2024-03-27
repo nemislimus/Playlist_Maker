@@ -6,4 +6,8 @@
     <dimen name="search_bar_side_padding">14dp</dimen>
     <dimen name="search_bar_icon_padding">8dp</dimen>
     <dimen name="search_bar_height">36dp</dimen>
+    <dimen name="search_bar_text_padding">38dp</dimen>
+    <dimen name="search_bar_margin_top">10dp</dimen>
+    <dimen name="search_bar_text_margin_top">10dp</dimen>
+    <dimen name="classic_size_16dp">16dp</dimen>
 </resources>

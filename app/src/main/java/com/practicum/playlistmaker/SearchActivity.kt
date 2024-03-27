@@ -14,7 +14,8 @@ import android.widget.Toast
 
 class SearchActivity : AppCompatActivity() {
 
-    private var searchBarTextValue: String? = null  // сюда будем записывать текст из поисковой строки
+    private var searchBarTextValue: String? =
+        null  // сюда будем записывать текст из поисковой строки
     private lateinit var searchBar: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +34,10 @@ class SearchActivity : AppCompatActivity() {
         // Очищаем строку поиска и убираем клавуатуру
         searchBarClearButton.setOnClickListener {
             searchBar.setText("")
+            searchBarTextValue = null
 
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(searchBar.windowToken, 0)
         }
 
@@ -48,7 +51,11 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 if (s.isNullOrEmpty())
-                    Toast.makeText(this@SearchActivity, "Строка поиска пуста", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SearchActivity,
+                        getString(R.string.search_bar_empty),
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
 
@@ -80,6 +87,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
     }
 }
