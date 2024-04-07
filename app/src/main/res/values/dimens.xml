@@ -1,7 +1,9 @@
 <resources>
     <dimen name="main_layout_margin">16dp</dimen>
     <dimen name="main_screen_text_size">22sp</dimen>
+    <dimen name="text_size_11sp">11sp</dimen>
     <dimen name="settings_menu_text_size">16sp</dimen>
+    <dimen name="text_size_16sp">16sp</dimen>
     <dimen name="button_classic_radius">16dp</dimen>
     <dimen name="search_bar_side_padding">14dp</dimen>
     <dimen name="search_bar_icon_padding">8dp</dimen>
@@ -9,5 +11,12 @@
     <dimen name="search_bar_text_padding">38dp</dimen>
     <dimen name="search_bar_margin_top">10dp</dimen>
     <dimen name="search_bar_text_margin_top">10dp</dimen>
+    <dimen name="classic_size_8dp">8dp</dimen>
+    <dimen name="classic_size_12dp">12dp</dimen>
+    <dimen name="classic_size_13dp">13dp</dimen>
+    <dimen name="classic_size_14dp">14dp</dimen>
     <dimen name="classic_size_16dp">16dp</dimen>
+    <dimen name="classic_size_24dp">24dp</dimen>
+    <dimen name="classic_size_60dp">60dp</dimen>
+    <dimen name="search_list_image_45dp">45dp</dimen>
 </resources>

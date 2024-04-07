@@ -2,20 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/SettingsScreenLayout"
+    style="@style/SearchScreenLayout"
     android:orientation="vertical"
     tools:context=".SearchActivity">
 
     <Button
         android:id="@+id/outOfSearchButton"
         style="@style/SettingScreenButtonOrigin.OutOfSettingsButton"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="@dimen/classic_size_8dp"
+        android:layout_marginHorizontal="@dimen/classic_size_16dp"
         android:text="@string/main_search"
         app:icon="@drawable/ic_arrow_back" />
 
     <FrameLayout
         android:id="@+id/searchBar"
-        style="@style/SearchBarContainer.theme">
+        style="@style/SearchBarContainer.theme"
+        android:layout_marginBottom="@dimen/classic_size_24dp">
 
         <ImageView
             android:id="@+id/zoomSearchBarIcon"
@@ -36,5 +38,12 @@
             style="@style/SearchIcons.theme"/>
 
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_trackList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
 
 </LinearLayout>

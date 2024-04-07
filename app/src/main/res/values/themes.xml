@@ -33,4 +33,16 @@
         <item name="android:backgroundTint">@color/grey_pale</item>
     </style>
 
+    <style name="TrackSmallText.theme">
+        <item name="android:textColor">@color/grey</item>
+    </style>
+
+    <style name="TrackArrowAndDivider">
+        <item name="tint">@color/grey</item>
+    </style>
+
+    <style name="TrackSmallText.SongName.theme">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>
