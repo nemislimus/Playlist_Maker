@@ -27,6 +27,8 @@
 
         <EditText
             android:id="@+id/searchBarEditText"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             style="@style/SearchEditText.theme" />
 
         <ImageView
@@ -44,6 +46,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <include
+        android:id="@+id/llPlaceholderLayuot"
+        layout="@layout/placeholder_search_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
 
 </LinearLayout>
