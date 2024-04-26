@@ -44,7 +44,6 @@
             <TextView
                 style="@style/TrackSmallText.theme"
                 android:id="@+id/tv_trackArtistName"
-                android:layout_width="0dp"
                 android:layout_weight="1"
                 tools:text="Smells Like Teen Spirit " />
 

@@ -35,11 +35,13 @@
         android:id="@+id/btnPlaceholderRefresh"
         style="@style/SearchPlaceholderButton"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/classic_height_36"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:paddingVertical="@dimen/classic_size_10dp"
-        android:paddingHorizontal="@dimen/classic_size_14dp"
+        android:paddingTop="@dimen/classic_size_10dp"
+        android:paddingBottom="@dimen/classic_size_10dp"
+        android:paddingStart="@dimen/classic_size_14dp"
+        android:paddingEnd="@dimen/classic_size_14dp"
         android:textSize="@dimen/classic_text_size_14"
         android:fontFamily="@font/ys_display_medium"
         android:textFontWeight="500"
@@ -48,10 +50,8 @@
         app:cornerRadius="54dp"
         android:foreground="?attr/selectableItemBackground"
         android:letterSpacing="0"
-        android:insetBottom="0dp"
-        android:insetTop="0dp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
         android:visibility="visible"
-        />
+        android:stateListAnimator="@null"
+        android:elevation="0dp" />
+
 </LinearLayout>

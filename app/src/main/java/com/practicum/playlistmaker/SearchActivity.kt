@@ -14,8 +14,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,12 +29,14 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchBar: EditText
     private lateinit var trackRecyclerView: RecyclerView
-    private lateinit var outOfSearchButton: Button
+    private lateinit var outOfSearchToolbar: Toolbar
     private lateinit var searchBarClearButton: ImageView
 
-
     private var trackList = ArrayList<Track>()
-    private val trackAdapter = TrackAdapter(trackList)
+    private var trackListValue: String? = json.toJson(trackList)
+
+
+    private var trackAdapter = TrackAdapter(trackList)
     private val itunesService = Retrofit.itunesInstance
 
     private lateinit var placeholderImage: ImageView
@@ -44,7 +49,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        outOfSearchButton = findViewById(R.id.outOfSearchButton)
+        outOfSearchToolbar = findViewById(R.id.searchToolBar)
         searchBar = findViewById(R.id.searchBarEditText)
         searchBarClearButton = findViewById(R.id.searchBarClearIcon)
 
@@ -59,7 +64,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         //Выход с экрана поиска
-        outOfSearchButton.setOnClickListener {
+        outOfSearchToolbar.setOnClickListener {
             finish()
         }
 
@@ -83,13 +88,6 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if (s.isNullOrEmpty())
-                    Toast.makeText(
-                        this@SearchActivity,
-                        getString(R.string.search_bar_empty),
-                        Toast.LENGTH_SHORT
-                    ).show()
-
                 searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
 
                 searchBarTextValue = s.toString()
@@ -131,12 +129,19 @@ class SearchActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(EDIT_TEXT_VALUE, searchBarTextValue)
+        trackListValue = json.toJson(trackList)
+        outState.putString(TRACK_LIST_VALUE, trackListValue)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchBarTextValue = savedInstanceState.getString(EDIT_TEXT_VALUE)
         searchBar.setText(searchBarTextValue)
+        trackListValue = savedInstanceState.getString(TRACK_LIST_VALUE)
+
+        val restoreTrackList = json.fromJson<ArrayList<Track>>(trackListValue, trackListType)
+        trackList.clear()
+        trackList.addAll(restoreTrackList)
     }
 
     private fun searchTracks(searchBarTextValue: String) {
@@ -179,7 +184,6 @@ class SearchActivity : AppCompatActivity() {
         trackList.clear()
         trackAdapter.notifyDataSetChanged()
         placeholderLayout.visibility = View.VISIBLE
-
         when (responseCode) {
             200 -> {
                 placeholderImage.visibility = View.VISIBLE
@@ -202,7 +206,12 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val TRACK_LIST_VALUE = "TRACK_LIST_VALUE"
+
         private const val PLACEHOLDER_HIDDEN = -1
         private const val PLACEHOLDER_ON_FAILURE = -2
+
+        private val json= Gson()
+        val trackListType = object : TypeToken<ArrayList<Track>>() {}.type
     }
 }

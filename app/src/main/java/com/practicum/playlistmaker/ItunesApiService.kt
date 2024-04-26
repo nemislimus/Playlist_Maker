@@ -7,7 +7,6 @@ interface ItunesApiService {
     @GET("search")
     fun getTracksOnSearch(
         @Query("term") text: String,
-        @Query("media") media: String = "music",
         @Query("entity") entity:String = "song"
     ) : Call<TracksResponse>
 }
