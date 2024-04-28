@@ -17,14 +17,14 @@
         android:layout_marginVertical="@dimen/classic_size_8dp"
         android:layout_gravity="start|center_vertical"
         android:background="@android:color/transparent"
-        tools:src="@drawable/ic_placeholder"/>
+        tools:src="@drawable/ic_placeholder_track_image"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginVertical="@dimen/classic_size_14dp"
-        android:layout_marginStart="66dp"
-        android:layout_marginEnd="44dp"
+        android:layout_marginStart="53dp"
+        android:layout_marginEnd="32dp"
         android:layout_gravity="center_vertical"
         android:orientation="vertical"
         android:background="@android:color/transparent">
@@ -44,7 +44,6 @@
             <TextView
                 style="@style/TrackSmallText.theme"
                 android:id="@+id/tv_trackArtistName"
-                android:layout_width="0dp"
                 android:layout_weight="1"
                 tools:text="Smells Like Teen Spirit " />
 
