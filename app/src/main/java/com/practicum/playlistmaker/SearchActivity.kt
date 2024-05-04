@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -25,25 +26,27 @@ import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
 
+    // переменные для сохранения состояний и хранения данных
     private var searchBarTextValue: String? = null
-
-    private lateinit var searchBar: EditText
-    private lateinit var trackRecyclerView: RecyclerView
-    private lateinit var outOfSearchToolbar: Toolbar
-    private lateinit var searchBarClearButton: ImageView
+    private var placeholderSaver: Int = 0
 
     private var trackList = ArrayList<Track>()
     private var trackListValue: String? = json.toJson(trackList)
 
-
-    private var trackAdapter = TrackAdapter(trackList)
-    private val itunesService = Retrofit.itunesInstance
+    // переменные для основных View на экране
+    private lateinit var searchBar: EditText
+    private lateinit var trackRecyclerView: RecyclerView
+    private lateinit var outOfSearchToolbar: Toolbar
+    private lateinit var searchBarClearButton: ImageView
 
     private lateinit var placeholderImage: ImageView
     private lateinit var placeholderText: TextView
     private lateinit var placeholderButton: Button
     private lateinit var placeholderLayout: LinearLayout
 
+    // Рабочие инструменты для настроек и логики
+    private var trackAdapter = TrackAdapter(trackList)
+    private val itunesService = Retrofit.itunesInstance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,11 +75,12 @@ class SearchActivity : AppCompatActivity() {
         searchBarClearButton.setOnClickListener {
             searchBar.setText("")
             searchBarTextValue = null
+            placeholderSaver = PLACEHOLDER_HIDDEN
 
             hideSearchBarKeyboard()
             trackList.clear()
             trackAdapter.notifyDataSetChanged()
-            placheholderStateManager(PLACEHOLDER_HIDDEN)
+//            placheholderStateManager(PLACEHOLDER_HIDDEN)
         }
 
         // Переопределяем TextWatcher
@@ -88,6 +92,8 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                if (s.isNullOrEmpty()) placheholderStateManager(PLACEHOLDER_HIDDEN)
+
                 searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
 
                 searchBarTextValue = s.toString()
@@ -98,7 +104,8 @@ class SearchActivity : AppCompatActivity() {
 
         // Оформляем список треков
         trackRecyclerView = findViewById(R.id.rv_trackList)
-        trackRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        trackRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackRecyclerView.adapter = trackAdapter
 
         // Фишка из теории - биндим кнопку DONE на вирт-клаве
@@ -127,10 +134,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState.putString(EDIT_TEXT_VALUE, searchBarTextValue)
         trackListValue = json.toJson(trackList)
         outState.putString(TRACK_LIST_VALUE, trackListValue)
+        outState.putInt(PLACEHOLDER_SAVER, placeholderSaver)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -138,6 +146,8 @@ class SearchActivity : AppCompatActivity() {
         searchBarTextValue = savedInstanceState.getString(EDIT_TEXT_VALUE)
         searchBar.setText(searchBarTextValue)
         trackListValue = savedInstanceState.getString(TRACK_LIST_VALUE)
+        placeholderSaver = savedInstanceState.getInt(PLACEHOLDER_SAVER)
+        placheholderStateManager(placeholderSaver)
 
         val restoreTrackList = json.fromJson<ArrayList<Track>>(trackListValue, trackListType)
         trackList.clear()
@@ -146,37 +156,58 @@ class SearchActivity : AppCompatActivity() {
 
     private fun searchTracks(searchBarTextValue: String) {
         if (searchBarTextValue.trim().isNotEmpty()) {
-            itunesService.getTracksOnSearch(searchBarTextValue).enqueue(object: Callback<TracksResponse> {
-                override fun onResponse(
-                    call: Call<TracksResponse>,
-                    response: Response<TracksResponse>
-                ) {
-                    when (response.code()) {
-                        200 -> {
-                            if (!response.body()?.results.isNullOrEmpty()) {
-                                trackList.clear()
-                                trackList.addAll(response.body()?.results!!)
-                                trackAdapter.notifyDataSetChanged()
-                                placheholderStateManager(PLACEHOLDER_HIDDEN)
-                            } else
-                                placheholderStateManager(response.code())
-                        }
+            itunesService.getTracksOnSearch(searchBarTextValue)
+                .enqueue(object : Callback<TracksResponse> {
+                    override fun onResponse(
+                        call: Call<TracksResponse>,
+                        response: Response<TracksResponse>
+                    ) {
+                        when (response.code()) {
+                            200 -> {
+                                if (!response.body()?.results.isNullOrEmpty()) {
+                                    placeholderSaver = PLACEHOLDER_HIDDEN
+                                    trackList.clear()
+                                    trackList.addAll(response.body()?.results!!)
+                                    trackAdapter.notifyDataSetChanged()
+                                    placheholderStateManager(PLACEHOLDER_HIDDEN)
+                                    Log.d(
+                                        "RESPONSE_LOG",
+                                        "200 - LIST ON. code:${response.code()} body:${response.body()?.results} "
+                                    )
 
-                        else -> {
-                            placheholderStateManager(response.code())
+                                } else {
+                                    placeholderSaver = 200
+                                    placheholderStateManager(response.code())
+                                    Log.d(
+                                        "RESPONSE_LOG",
+                                        "200 -LIST OFF. placeholderSaver = $placeholderSaver. code:${response.code()} " +
+                                                "body:${response.body()?.results} "
+                                    )
+                                }
+                            }
+
+                            else -> {
+                                placeholderSaver = PLACEHOLDER_ON_FAILURE
+                                placheholderStateManager(response.code())
+                                Log.d(
+                                    "RESPONSE_LOG",
+                                    "NOT 200 -LIST OFF. code:${response.code()} body:${response.body()} "
+                                )
+                            }
                         }
                     }
-                }
 
-                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    placheholderStateManager(PLACEHOLDER_ON_FAILURE)
-                }
-            })
+                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                        placeholderSaver = PLACEHOLDER_ON_FAILURE
+                        placheholderStateManager(PLACEHOLDER_ON_FAILURE)
+                        Log.d("RESPONSE_LOG", "FAILURE ")
+                    }
+                })
         }
     }
 
-    private fun placheholderStateManager (responseCode: Int) {
-        if(responseCode == PLACEHOLDER_HIDDEN) {
+    private fun placheholderStateManager(responseCode: Int) {
+        if (responseCode == PLACEHOLDER_HIDDEN) {
             placeholderLayout.visibility = View.GONE
             return
         }
@@ -207,11 +238,12 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
         private const val TRACK_LIST_VALUE = "TRACK_LIST_VALUE"
+        private const val PLACEHOLDER_SAVER = "PLACEHOLDER_SAVER"
 
         private const val PLACEHOLDER_HIDDEN = -1
         private const val PLACEHOLDER_ON_FAILURE = -2
 
-        private val json= Gson()
+        private val json = Gson()
         val trackListType = object : TypeToken<ArrayList<Track>>() {}.type
     }
 }
