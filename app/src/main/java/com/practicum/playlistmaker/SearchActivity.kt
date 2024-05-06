@@ -14,7 +14,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +22,7 @@ import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.reflect.Type
 
 class SearchActivity : AppCompatActivity() {
 
@@ -32,6 +32,8 @@ class SearchActivity : AppCompatActivity() {
 
     private var trackList = ArrayList<Track>()
     private var trackListValue: String? = json.toJson(trackList)
+
+    private var historyTrackList: ArrayList<Track>? = null
 
     // переменные для основных View на экране
     private lateinit var searchBar: EditText
@@ -44,8 +46,14 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderButton: Button
     private lateinit var placeholderLayout: LinearLayout
 
+    private lateinit var historyText: TextView
+
     // Рабочие инструменты для настроек и логики
-    private var trackAdapter = TrackAdapter(trackList)
+    private var trackAdapter = TrackAdapter(
+        { manageHistoryList(it) },
+        { clearHistory(it) },
+    )
+
     private val itunesService = Retrofit.itunesInstance
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +69,17 @@ class SearchActivity : AppCompatActivity() {
         placeholderButton = findViewById(R.id.btnPlaceholderRefresh)
         placeholderLayout = findViewById(R.id.llPlaceholderLayuot)
 
-        //Нажатие на кнопку Обновить
+        historyText = findViewById(R.id.tvSearchHistory)
+
+        // Достаём значения history из SP
+        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        historyTrackList =
+            sharedPrefs.getString(HISTORY_KEY, null)?.let { createTracksFromJson(it) }
+
+        // Состояние видимости истории при входе на активити
+        manageHistoryVisibilityOnStart()
+
+        //Нажатие на кнопку плейсхолдера "Обновить"
         placeholderButton.setOnClickListener {
             searchTracks(searchBarTextValue.toString())
         }
@@ -71,16 +89,19 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        // Очищаем строку поиска и убираем клавуатуру
+        // Очищаем строку поиска и убираем виртуальную клавуатуру
         searchBarClearButton.setOnClickListener {
             searchBar.setText("")
             searchBarTextValue = null
             placeholderSaver = PLACEHOLDER_HIDDEN
-
             hideSearchBarKeyboard()
             trackList.clear()
             trackAdapter.notifyDataSetChanged()
-//            placheholderStateManager(PLACEHOLDER_HIDDEN)
+        }
+
+        // Обрабатываем отображение истории при фокусе на searchBar
+        searchBar.setOnFocusChangeListener { _, hasFocus ->
+            manageHistoryVisibilityOnChanges(hasFocus, searchBar.text.toString())
         }
 
         // Переопределяем TextWatcher
@@ -92,17 +113,16 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                manageHistoryVisibilityOnChanges(searchBar.hasFocus(), s.toString())
                 if (s.isNullOrEmpty()) placheholderStateManager(PLACEHOLDER_HIDDEN)
-
                 searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
-
                 searchBarTextValue = s.toString()
             }
         }
 
         searchBar.addTextChangedListener(searchBarTextWatcher)
 
-        // Оформляем список треков
+        // Оформляем список треков (нужный список треков для отображения подгружаем в зависимости от состояния активити)
         trackRecyclerView = findViewById(R.id.rv_trackList)
         trackRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -114,6 +134,19 @@ class SearchActivity : AppCompatActivity() {
                 searchTracks(searchBarTextValue.toString())
             }
             false
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        historyTrackList?.removeAt(historyTrackList?.size!! - 1)
+        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+
+        if (historyTrackList != null) {
+            sharedPrefs.edit()
+                .putString(HISTORY_KEY, createJsonFromTracks(historyTrackList!!))
+                .apply()
         }
     }
 
@@ -131,6 +164,105 @@ class SearchActivity : AppCompatActivity() {
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(searchBar.windowToken, 0)
+    }
+
+    private fun manageHistoryVisibilityOnStart() {
+        if (historyTrackList == null || historyTrackList?.isEmpty() == true) {
+            historyText.visibility = View.GONE
+            trackAdapter.tracks = trackList
+        } else {
+            historyText.visibility = View.VISIBLE
+            historyTrackList?.add(trackForButtonInflate)
+            trackAdapter.tracks = historyTrackList!!
+        }
+    }
+
+    private fun manageHistoryVisibilityOnChanges(focus: Boolean, text: String?) {
+        if (historyTrackList == null || historyTrackList?.isEmpty() == true) {
+            historyText.visibility = View.GONE
+        } else {
+            historyText.visibility =
+                if (focus && text?.isEmpty() == true) View.VISIBLE else View.GONE
+        }
+
+        if (historyText.visibility == View.VISIBLE) {
+            trackAdapter.tracks = historyTrackList!!
+        } else {
+            trackAdapter.tracks = trackList
+        }
+        Log.d(
+            "HISTORY_LOG", "MHVS " +
+                    "historyTrackList: ${historyTrackList.toString()}"
+        )
+    }
+
+    fun manageHistoryList(track: Track) {
+
+        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val restoreTrackList = sharedPrefs.getString(HISTORY_KEY, null)
+            ?.let { createTracksFromJson(it) }
+
+        if (historyTrackList != null) {
+            historyTrackList?.clear()
+            if (restoreTrackList != null) {
+                historyTrackList?.addAll(restoreTrackList)
+            }
+            val indexOfTwin = historyTrackList?.indexOfFirst { track.trackId == it.trackId }
+
+            if (indexOfTwin != null && indexOfTwin != -1) {
+                historyTrackList?.removeAt(indexOfTwin)
+            }
+
+            historyTrackList?.add(0, track)
+
+            if (historyTrackList?.size!! > 10) {
+                historyTrackList?.removeAt(historyTrackList?.size!! - 1)
+            }
+
+            sharedPrefs.edit()
+                .putString(HISTORY_KEY, createJsonFromTracks(historyTrackList!!))
+                .apply()
+
+            historyTrackList?.add(trackForButtonInflate)
+            if (historyText.visibility == View.VISIBLE) {
+                trackAdapter.notifyDataSetChanged()
+                trackRecyclerView.scrollToPosition(0)
+            }
+
+        } else {
+            historyTrackList = arrayListOf()
+            historyTrackList?.add(track)
+
+            sharedPrefs.edit()
+                .putString(HISTORY_KEY, createJsonFromTracks(historyTrackList!!))
+                .apply()
+
+            historyTrackList?.add(trackForButtonInflate)
+
+        }
+    }
+
+    fun clearHistory(track: Track) {
+        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        sharedPrefs.edit()
+            .remove(HISTORY_KEY)
+            .apply()
+
+        historyTrackList = null
+        manageHistoryVisibilityOnChanges(searchBar.hasFocus(), searchBar.text.toString())
+
+        Log.d(
+            "HISTORY_LOG", "История была очищена! " +
+                    "Объект заглушка с ID ${track.trackId}"
+        )
+    }
+
+    private fun createJsonFromTracks(fact: ArrayList<Track>): String {
+        return json.toJson(fact)
+    }
+
+    private fun createTracksFromJson(jsonValue: String): ArrayList<Track> {
+        return json.fromJson(jsonValue, trackListType)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -243,7 +375,18 @@ class SearchActivity : AppCompatActivity() {
         private const val PLACEHOLDER_HIDDEN = -1
         private const val PLACEHOLDER_ON_FAILURE = -2
 
+        const val HISTORY_KEY = "history_key"
+
+        // Для реализации через один Адаптер ничего лучше заглушки придумать не смог ((
+        private val trackForButtonInflate: Track = Track(
+            -1,
+            "plm",
+            "plm",
+            210743,
+            "plm"
+        )
+
         private val json = Gson()
-        val trackListType = object : TypeToken<ArrayList<Track>>() {}.type
+        private val trackListType: Type? = object : TypeToken<ArrayList<Track>>() {}.type
     }
 }

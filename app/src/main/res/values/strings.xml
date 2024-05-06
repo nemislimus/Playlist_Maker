@@ -19,6 +19,8 @@
     <string name="no_browser_app">На устройстве нет браузера!</string>
     <string name="search_bar_empty">Строка поиска пуста</string>
     <string name="refresh">Обновить</string>
+    <string name="search_history">Вы искали</string>
+    <string name="clear_search_history">Очистить историю</string>
     <string name="search_error_not_found">Ничего не нашлось</string>
     <string name="search_error_no_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
 </resources>

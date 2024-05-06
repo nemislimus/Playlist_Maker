@@ -12,7 +12,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+class TrackViewHolder(parent: ViewGroup) : BaseTrackViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.track_list_item, parent, false)
 ) {
     private val trackImage: ImageView
@@ -27,7 +27,7 @@ class TrackViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         trackTime = itemView.findViewById(R.id.tv_trackTime)
     }
 
-    fun bind(model: Track) {
+    override fun bind(model: Track) {
         val cornerRadiusInPx = dpToPx(2f, itemView.context)
 
         trackName.text = model.trackName
