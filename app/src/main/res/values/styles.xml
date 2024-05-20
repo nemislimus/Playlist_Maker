@@ -188,4 +188,24 @@
         <item name="android:textColor">?attr/colorSecondaryVariant</item>
     </style>
 
+
+    <style name="TrackInfoField">
+        <item name="android:textSize">@dimen/classic_text_size_13</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="layout_constraintHorizontal_bias">0</item>
+        <item name="layout_constrainedWidth">true</item>
+    </style>
+
+    <style name="TrackInfoField.TrackInfoFieldValue">
+        <item name="android:textColor">?attr/colorSecondaryVariant</item>
+        <item name="layout_constraintHorizontal_bias">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="layout_constrainedWidth">true</item>
+        <item name="android:gravity">end</item>
+        <item name="android:layout_marginStart">@dimen/classic_size_16dp</item>
+    </style>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -31,7 +32,7 @@ class SearchActivity : AppCompatActivity() {
     private var placeholderSaver: Int = 0
 
     private var trackList = ArrayList<Track>()
-    private var trackListValue: String? = json.toJson(trackList)
+    private var trackListValue: String? = Gson().toJson(trackList)
 
     private var historyTrackList: ArrayList<Track>? = null
 
@@ -50,7 +51,7 @@ class SearchActivity : AppCompatActivity() {
 
     // Рабочие инструменты для настроек и логики
     private var trackAdapter = TrackAdapter(
-        { manageHistoryList(it) },
+        { manageListItemClick(it) },
         { clearHistory(it) },
     )
 
@@ -74,10 +75,8 @@ class SearchActivity : AppCompatActivity() {
         // Достаём значения history из SP
         val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
         historyTrackList =
-            sharedPrefs.getString(HISTORY_KEY, null)?.let { createTracksFromJson(it) }
+            sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
 
-        // Состояние видимости истории при входе на активити
-        manageHistoryVisibilityOnStart()
 
         //Нажатие на кнопку плейсхолдера "Обновить"
         placeholderButton.setOnClickListener {
@@ -128,12 +127,31 @@ class SearchActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackRecyclerView.adapter = trackAdapter
 
+
         // Фишка из теории - биндим кнопку DONE на вирт-клаве
         searchBar.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchTracks(searchBarTextValue.toString())
             }
             false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        historyTrackList =
+            sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
+
+        // При условии, что мы вернулись с плеера, мы показываем результат поиска, а если в плеер заходили
+        // с истории, то показываем историю
+        if (trackList.isEmpty()) {
+            manageHistoryVisibilityOnStart()
+        } else {
+            historyTrackList?.add(trackForButtonInflate)
+            trackAdapter.tracks = trackList
+            trackAdapter.notifyDataSetChanged()
         }
     }
 
@@ -145,7 +163,7 @@ class SearchActivity : AppCompatActivity() {
 
         if (historyTrackList != null) {
             sharedPrefs.edit()
-                .putString(HISTORY_KEY, createJsonFromTracks(historyTrackList!!))
+                .putString(HISTORY_KEY, createJsonFromTrackList(historyTrackList!!))
                 .apply()
         }
     }
@@ -174,6 +192,7 @@ class SearchActivity : AppCompatActivity() {
             historyText.visibility = View.VISIBLE
             historyTrackList?.add(trackForButtonInflate)
             trackAdapter.tracks = historyTrackList!!
+            trackAdapter.notifyDataSetChanged()
         }
     }
 
@@ -190,17 +209,13 @@ class SearchActivity : AppCompatActivity() {
         } else {
             trackAdapter.tracks = trackList
         }
-        Log.d(
-            "HISTORY_LOG", "MHVS " +
-                    "historyTrackList: ${historyTrackList.toString()}"
-        )
     }
 
-    fun manageHistoryList(track: Track) {
-
+    private fun manageListItemClick(track: Track) {
+        // Тут мы выполняем работу с историей
         val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
         val restoreTrackList = sharedPrefs.getString(HISTORY_KEY, null)
-            ?.let { createTracksFromJson(it) }
+            ?.let { createTrackListFromJson(it) }
 
         if (historyTrackList != null) {
             historyTrackList?.clear()
@@ -220,7 +235,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             sharedPrefs.edit()
-                .putString(HISTORY_KEY, createJsonFromTracks(historyTrackList!!))
+                .putString(HISTORY_KEY, createJsonFromTrackList(historyTrackList!!))
                 .apply()
 
             historyTrackList?.add(trackForButtonInflate)
@@ -234,15 +249,20 @@ class SearchActivity : AppCompatActivity() {
             historyTrackList?.add(track)
 
             sharedPrefs.edit()
-                .putString(HISTORY_KEY, createJsonFromTracks(historyTrackList!!))
+                .putString(HISTORY_KEY, createJsonFromTrackList(historyTrackList!!))
                 .apply()
 
             historyTrackList?.add(trackForButtonInflate)
-
         }
+
+        // Тут мы отправляем переходим на экран плеера, передавая ему объект на который нажали
+        val playerIntetn = Intent(this, PlayerActivity::class.java).apply {
+            putExtra(TRACK_KEY, createJsonFromTrack(track))
+        }
+        startActivity(playerIntetn)
     }
 
-    fun clearHistory(track: Track) {
+    private fun clearHistory(track: Track) {
         val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
         sharedPrefs.edit()
             .remove(HISTORY_KEY)
@@ -250,24 +270,20 @@ class SearchActivity : AppCompatActivity() {
 
         historyTrackList = null
         manageHistoryVisibilityOnChanges(searchBar.hasFocus(), searchBar.text.toString())
-
-        Log.d(
-            "HISTORY_LOG", "История была очищена! " +
-                    "Объект заглушка с ID ${track.trackId}"
-        )
     }
 
-    private fun createJsonFromTracks(fact: ArrayList<Track>): String {
-        return json.toJson(fact)
+    private fun createJsonFromTrackList(fact: ArrayList<Track>): String {
+        return Gson().toJson(fact)
     }
 
-    private fun createTracksFromJson(jsonValue: String): ArrayList<Track> {
-        return json.fromJson(jsonValue, trackListType)
+    private fun createTrackListFromJson(jsonValue: String): ArrayList<Track> {
+        return Gson().fromJson(jsonValue, trackListType)
     }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(EDIT_TEXT_VALUE, searchBarTextValue)
-        trackListValue = json.toJson(trackList)
+        trackListValue = Gson().toJson(trackList)
         outState.putString(TRACK_LIST_VALUE, trackListValue)
         outState.putInt(PLACEHOLDER_SAVER, placeholderSaver)
         super.onSaveInstanceState(outState)
@@ -281,7 +297,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderSaver = savedInstanceState.getInt(PLACEHOLDER_SAVER)
         placheholderStateManager(placeholderSaver)
 
-        val restoreTrackList = json.fromJson<ArrayList<Track>>(trackListValue, trackListType)
+        val restoreTrackList = Gson().fromJson<ArrayList<Track>>(trackListValue, trackListType)
         trackList.clear()
         trackList.addAll(restoreTrackList)
     }
@@ -377,16 +393,18 @@ class SearchActivity : AppCompatActivity() {
 
         const val HISTORY_KEY = "history_key"
 
-        // Для реализации через один Адаптер ничего лучше заглушки придумать не смог ((
         private val trackForButtonInflate: Track = Track(
             -1,
             "plm",
             "plm",
             210743,
+            "plm",
+            "plm",
+            "plm",
+            "plm",
             "plm"
         )
 
-        private val json = Gson()
         private val trackListType: Type? = object : TypeToken<ArrayList<Track>>() {}.type
     }
 }

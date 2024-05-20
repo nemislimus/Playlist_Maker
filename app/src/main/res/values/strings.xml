@@ -23,4 +23,11 @@
     <string name="clear_search_history">Очистить историю</string>
     <string name="search_error_not_found">Ничего не нашлось</string>
     <string name="search_error_no_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="back_to_search">Обратно к поиску</string>
+    <string name="album_cover">Обложка альбома</string>
+    <string name="track_duration">Длительность</string>
+    <string name="track_album">Альбом</string>
+    <string name="track_genre">Жанр</string>
+    <string name="track_country">Страна</string>
+    <string name="release_date">Год</string>
 </resources>

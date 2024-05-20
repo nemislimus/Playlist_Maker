@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.gson.Gson
 
 class PlaylistApp: Application() {
 
@@ -29,3 +30,12 @@ class PlaylistApp: Application() {
 
 const val APP_PREFERENCES = "app_preferences"
 const val THEME_KEY = "theme_key"
+const val TRACK_KEY = "track_key"
+
+fun createJsonFromTrack(track: Track): String {
+    return Gson().toJson(track)
+}
+
+fun createTrackFromJson(jsonValue: String): Track {
+    return Gson().fromJson(jsonValue, Track::class.java)
+}

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
@@ -8,8 +7,6 @@ class TrackAdapter(
     private val trackClickListener: ItemClickListener,
     private val buttonClickListener: ItemClickListener
 ): RecyclerView.Adapter<BaseTrackViewHolder>() {
-
-    var isHistoryTracks = false
 
     var tracks: List<Track> = arrayListOf()
 
