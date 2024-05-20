@@ -2,6 +2,7 @@
     <dimen name="main_layout_margin">16dp</dimen>
     <dimen name="main_screen_text_size">22sp</dimen>
     <dimen name="classic_text_size_22">22sp</dimen>
+    <dimen name="classic_text_size_19">19sp</dimen>
     <dimen name="classic_text_size_14">14sp</dimen>
     <dimen name="text_size_11sp">11sp</dimen>
     <dimen name="settings_menu_text_size">16sp</dimen>

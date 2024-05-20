@@ -12,9 +12,12 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 
 class SettingsActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        val settingsSharePrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
 
         val outOfSettingsButton = findViewById<Button>(R.id.outOfSettingsButton)
         val switchTheme = findViewById<Switch>(R.id.switchTheme)
@@ -22,9 +25,20 @@ class SettingsActivity : AppCompatActivity() {
         val supportButton = findViewById<Button>(R.id.supportButton)
         val userAgreementButton = findViewById<Button>(R.id.userAgreementButton)
 
+        switchTheme.isChecked = (applicationContext as PlaylistApp).darkThemeValue
+
         //Выход с экрана настроек
         outOfSettingsButton.setOnClickListener {
             finish()
+        }
+
+        // Реализуем переключатель темы
+        switchTheme.setOnCheckedChangeListener { switcher, checked ->
+            settingsSharePrefs.edit()
+                .putBoolean(THEME_KEY, checked)
+                .apply()
+
+            (applicationContext as PlaylistApp).switchTheme(checked)
         }
 
         // Шарим ссылку во все возможные приложения
