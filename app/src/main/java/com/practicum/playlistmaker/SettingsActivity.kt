@@ -8,8 +8,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Switch
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SwitchCompat
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -33,7 +32,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Реализуем переключатель темы
-        switchTheme.setOnCheckedChangeListener { switcher, checked ->
+        switchTheme.setOnCheckedChangeListener { _, checked ->
             settingsSharePrefs.edit()
                 .putBoolean(THEME_KEY, checked)
                 .apply()

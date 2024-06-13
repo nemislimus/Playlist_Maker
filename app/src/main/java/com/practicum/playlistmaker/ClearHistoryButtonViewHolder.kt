@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 
-open class BaseTrackViewHolder(view: View): RecyclerView.ViewHolder(view) {
-    open fun bind(model: Track) {
-    }
+abstract class BaseTrackViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    abstract fun bind(model: Track)
 }
 
 class ClearHistoryButtonViewHolder(parent: ViewGroup): BaseTrackViewHolder(
