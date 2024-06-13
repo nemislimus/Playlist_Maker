@@ -31,7 +31,7 @@ class TrackViewHolder(parent: ViewGroup) : BaseTrackViewHolder(
 
         trackName.text = model.trackName
         trackArtistName.text = model.artistName
-        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis) // фишка из теории
+        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
 
         Glide.with(itemView)
             .load(model.artworkUrl100)
@@ -41,11 +41,12 @@ class TrackViewHolder(parent: ViewGroup) : BaseTrackViewHolder(
             .into(trackImage)
     }
 
-    private fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            context.resources.displayMetrics).toInt()
+    companion object {
+        fun dpToPx(dp: Float, context: Context): Int {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                context.resources.displayMetrics).toInt()
+        }
     }
-
 }

@@ -29,7 +29,7 @@ class SearchActivity : AppCompatActivity() {
 
     // переменные для сохранения состояний и хранения данных
     private var searchBarTextValue: String? = null
-    private var placeholderSaver: Int = 0
+    private var placeholderStateSaver: Int = 0
 
     private var trackList = ArrayList<Track>()
     private var trackListValue: String? = Gson().toJson(trackList)
@@ -54,7 +54,6 @@ class SearchActivity : AppCompatActivity() {
         { manageListItemClick(it) },
         { clearHistory(it) },
     )
-
     private val itunesService = Retrofit.itunesInstance
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +72,7 @@ class SearchActivity : AppCompatActivity() {
         historyText = findViewById(R.id.tvSearchHistory)
 
         // Достаём значения history из SP
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         historyTrackList =
             sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
 
@@ -92,7 +91,7 @@ class SearchActivity : AppCompatActivity() {
         searchBarClearButton.setOnClickListener {
             searchBar.setText("")
             searchBarTextValue = null
-            placeholderSaver = PLACEHOLDER_HIDDEN
+            placeholderStateSaver = PLACEHOLDER_HIDDEN
             hideSearchBarKeyboard()
             trackList.clear()
             trackAdapter.notifyDataSetChanged()
@@ -140,7 +139,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         historyTrackList =
             sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
 
@@ -159,7 +158,7 @@ class SearchActivity : AppCompatActivity() {
         super.onStop()
 
         historyTrackList?.removeAt(historyTrackList?.size!! - 1)
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
 
         if (historyTrackList != null) {
             sharedPrefs.edit()
@@ -213,7 +212,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun manageListItemClick(track: Track) {
         // Тут мы выполняем работу с историей
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         val restoreTrackList = sharedPrefs.getString(HISTORY_KEY, null)
             ?.let { createTrackListFromJson(it) }
 
@@ -257,13 +256,13 @@ class SearchActivity : AppCompatActivity() {
 
         // Тут мы отправляем переходим на экран плеера, передавая ему объект на который нажали
         val playerIntetn = Intent(this, PlayerActivity::class.java).apply {
-            putExtra(TRACK_KEY, createJsonFromTrack(track))
+            putExtra(PlaylistApp.TRACK_KEY, createJsonFromTrack(track))
         }
         startActivity(playerIntetn)
     }
 
     private fun clearHistory(track: Track) {
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         sharedPrefs.edit()
             .remove(HISTORY_KEY)
             .apply()
@@ -285,7 +284,7 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(EDIT_TEXT_VALUE, searchBarTextValue)
         trackListValue = Gson().toJson(trackList)
         outState.putString(TRACK_LIST_VALUE, trackListValue)
-        outState.putInt(PLACEHOLDER_SAVER, placeholderSaver)
+        outState.putInt(PLACEHOLDER_SAVER, placeholderStateSaver)
         super.onSaveInstanceState(outState)
     }
 
@@ -294,8 +293,8 @@ class SearchActivity : AppCompatActivity() {
         searchBarTextValue = savedInstanceState.getString(EDIT_TEXT_VALUE)
         searchBar.setText(searchBarTextValue)
         trackListValue = savedInstanceState.getString(TRACK_LIST_VALUE)
-        placeholderSaver = savedInstanceState.getInt(PLACEHOLDER_SAVER)
-        placheholderStateManager(placeholderSaver)
+        placeholderStateSaver = savedInstanceState.getInt(PLACEHOLDER_SAVER)
+        placheholderStateManager(placeholderStateSaver)
 
         val restoreTrackList = Gson().fromJson<ArrayList<Track>>(trackListValue, trackListType)
         trackList.clear()
@@ -313,7 +312,7 @@ class SearchActivity : AppCompatActivity() {
                         when (response.code()) {
                             200 -> {
                                 if (!response.body()?.results.isNullOrEmpty()) {
-                                    placeholderSaver = PLACEHOLDER_HIDDEN
+                                    placeholderStateSaver = PLACEHOLDER_HIDDEN
                                     trackList.clear()
                                     trackList.addAll(response.body()?.results!!)
                                     trackAdapter.notifyDataSetChanged()
@@ -324,18 +323,18 @@ class SearchActivity : AppCompatActivity() {
                                     )
 
                                 } else {
-                                    placeholderSaver = 200
+                                    placeholderStateSaver = 200
                                     placheholderStateManager(response.code())
                                     Log.d(
                                         "RESPONSE_LOG",
-                                        "200 -LIST OFF. placeholderSaver = $placeholderSaver. code:${response.code()} " +
+                                        "200 -LIST OFF. placeholderSaver = $placeholderStateSaver. code:${response.code()} " +
                                                 "body:${response.body()?.results} "
                                     )
                                 }
                             }
 
                             else -> {
-                                placeholderSaver = PLACEHOLDER_ON_FAILURE
+                                placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                                 placheholderStateManager(response.code())
                                 Log.d(
                                     "RESPONSE_LOG",
@@ -346,7 +345,7 @@ class SearchActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        placeholderSaver = PLACEHOLDER_ON_FAILURE
+                        placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                         placheholderStateManager(PLACEHOLDER_ON_FAILURE)
                         Log.d("RESPONSE_LOG", "FAILURE ")
                     }

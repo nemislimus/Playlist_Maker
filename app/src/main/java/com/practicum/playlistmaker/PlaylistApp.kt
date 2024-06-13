@@ -26,11 +26,13 @@ class PlaylistApp: Application() {
             }
         )
     }
-}
 
-const val APP_PREFERENCES = "app_preferences"
-const val THEME_KEY = "theme_key"
-const val TRACK_KEY = "track_key"
+    companion object {
+        const val THEME_KEY = "theme_key"
+        const val TRACK_KEY = "track_key"
+        const val APP_PREFERENCES = "app_preferences"
+    }
+}
 
 fun createJsonFromTrack(track: Track): String {
     return Gson().toJson(track)
