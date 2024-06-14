@@ -25,6 +25,7 @@
     <dimen name="classic_size_24dp">24dp</dimen>
     <dimen name="classic_size_26dp">26dp</dimen>
     <dimen name="classic_size_60dp">60dp</dimen>
+    <dimen name="classic_size_124dp">124dp</dimen>
     <dimen name="classic_size_30dp">30dp</dimen>
     <dimen name="classic_size_40dp">40dp</dimen>
     <dimen name="search_list_image_45dp">45dp</dimen>

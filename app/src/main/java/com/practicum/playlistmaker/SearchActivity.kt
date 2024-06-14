@@ -4,18 +4,21 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -33,7 +36,6 @@ class SearchActivity : AppCompatActivity() {
 
     private var trackList = ArrayList<Track>()
     private var trackListValue: String? = Gson().toJson(trackList)
-
     private var historyTrackList: ArrayList<Track>? = null
 
     // переменные для основных View на экране
@@ -41,6 +43,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackRecyclerView: RecyclerView
     private lateinit var outOfSearchToolbar: Toolbar
     private lateinit var searchBarClearButton: ImageView
+    private lateinit var searchProgressBar: ProgressBar
 
     private lateinit var placeholderImage: ImageView
     private lateinit var placeholderText: TextView
@@ -51,10 +54,14 @@ class SearchActivity : AppCompatActivity() {
 
     // Рабочие инструменты для настроек и логики
     private var trackAdapter = TrackAdapter(
-        { manageListItemClick(it) },
+        { if (clickListItemDebounce()) manageListItemClick(it) },
         { clearHistory(it) },
     )
     private val itunesService = Retrofit.itunesInstance
+    private val searchRunnable = Runnable { searchTracks(searchBarTextValue) }
+
+    private var isListItemClickAllowed: Boolean = true
+    private val searchActivityHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,11 +70,12 @@ class SearchActivity : AppCompatActivity() {
         outOfSearchToolbar = findViewById(R.id.searchToolBar)
         searchBar = findViewById(R.id.searchBarEditText)
         searchBarClearButton = findViewById(R.id.searchBarClearIcon)
+        searchProgressBar = findViewById(R.id.searchProgressBar)
 
         placeholderImage = findViewById(R.id.ivPlaceholderImage)
         placeholderText = findViewById(R.id.tvPlaceholderText)
         placeholderButton = findViewById(R.id.btnPlaceholderRefresh)
-        placeholderLayout = findViewById(R.id.llPlaceholderLayuot)
+        placeholderLayout = findViewById(R.id.llPlaceholderLayout)
 
         historyText = findViewById(R.id.tvSearchHistory)
 
@@ -115,6 +123,7 @@ class SearchActivity : AppCompatActivity() {
                 if (s.isNullOrEmpty()) placheholderStateManager(PLACEHOLDER_HIDDEN)
                 searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
                 searchBarTextValue = s.toString()
+                searchTracksDebounce()
             }
         }
 
@@ -125,15 +134,6 @@ class SearchActivity : AppCompatActivity() {
         trackRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackRecyclerView.adapter = trackAdapter
-
-
-        // Фишка из теории - биндим кнопку DONE на вирт-клаве
-        searchBar.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchTracks(searchBarTextValue.toString())
-            }
-            false
-        }
     }
 
     override fun onResume() {
@@ -254,7 +254,7 @@ class SearchActivity : AppCompatActivity() {
             historyTrackList?.add(trackForButtonInflate)
         }
 
-        // Тут мы отправляем переходим на экран плеера, передавая ему объект на который нажали
+        // Переходим на экран плеера, передавая ему объект на который нажали
         val playerIntetn = Intent(this, PlayerActivity::class.java).apply {
             putExtra(PlaylistApp.TRACK_KEY, createJsonFromTrack(track))
         }
@@ -301,14 +301,18 @@ class SearchActivity : AppCompatActivity() {
         trackList.addAll(restoreTrackList)
     }
 
-    private fun searchTracks(searchBarTextValue: String) {
-        if (searchBarTextValue.trim().isNotEmpty()) {
+    private fun searchTracks(searchBarTextValue: String?) {
+        if (searchBarTextValue?.trim()?.isNotEmpty() == true) {
+            trackRecyclerView.isVisible = false
+            searchProgressBar.isVisible = true
             itunesService.getTracksOnSearch(searchBarTextValue)
                 .enqueue(object : Callback<TracksResponse> {
                     override fun onResponse(
                         call: Call<TracksResponse>,
                         response: Response<TracksResponse>
                     ) {
+                        searchProgressBar.isVisible = false
+                        trackRecyclerView.isVisible = true
                         when (response.code()) {
                             200 -> {
                                 if (!response.body()?.results.isNullOrEmpty()) {
@@ -345,6 +349,8 @@ class SearchActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                        searchProgressBar.isVisible = false
+                        trackRecyclerView.isVisible = true
                         placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                         placheholderStateManager(PLACEHOLDER_ON_FAILURE)
                         Log.d("RESPONSE_LOG", "FAILURE ")
@@ -382,7 +388,27 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    private fun clickListItemDebounce(): Boolean {
+        val current = isListItemClickAllowed
+        if (isListItemClickAllowed) {
+            isListItemClickAllowed = false
+            searchActivityHandler.postDelayed(
+                { isListItemClickAllowed = true },
+                CLICK_DEBOUNCE_DELAY
+            )
+        }
+        return current
+    }
+
+    private fun searchTracksDebounce() {
+        searchActivityHandler.removeCallbacks(searchRunnable)
+        searchActivityHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
     companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
         private const val TRACK_LIST_VALUE = "TRACK_LIST_VALUE"
         private const val PLACEHOLDER_SAVER = "PLACEHOLDER_SAVER"
@@ -401,7 +427,8 @@ class SearchActivity : AppCompatActivity() {
             "plm",
             "plm",
             "plm",
-            "plm"
+            "plm",
+            "plm",
         )
 
         private val trackListType: Type? = object : TypeToken<ArrayList<Track>>() {}.type
