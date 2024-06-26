@@ -4,18 +4,21 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -29,11 +32,10 @@ class SearchActivity : AppCompatActivity() {
 
     // переменные для сохранения состояний и хранения данных
     private var searchBarTextValue: String? = null
-    private var placeholderSaver: Int = 0
+    private var placeholderStateSaver: Int = 0
 
     private var trackList = ArrayList<Track>()
     private var trackListValue: String? = Gson().toJson(trackList)
-
     private var historyTrackList: ArrayList<Track>? = null
 
     // переменные для основных View на экране
@@ -41,6 +43,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackRecyclerView: RecyclerView
     private lateinit var outOfSearchToolbar: Toolbar
     private lateinit var searchBarClearButton: ImageView
+    private lateinit var searchProgressBar: ProgressBar
 
     private lateinit var placeholderImage: ImageView
     private lateinit var placeholderText: TextView
@@ -51,11 +54,14 @@ class SearchActivity : AppCompatActivity() {
 
     // Рабочие инструменты для настроек и логики
     private var trackAdapter = TrackAdapter(
-        { manageListItemClick(it) },
+        { if (clickListItemDebounce()) manageListItemClick(it) },
         { clearHistory(it) },
     )
-
     private val itunesService = Retrofit.itunesInstance
+    private val searchRunnable = Runnable { searchTracks(searchBarTextValue) }
+
+    private var isListItemClickAllowed: Boolean = true
+    private val searchActivityHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,16 +70,17 @@ class SearchActivity : AppCompatActivity() {
         outOfSearchToolbar = findViewById(R.id.searchToolBar)
         searchBar = findViewById(R.id.searchBarEditText)
         searchBarClearButton = findViewById(R.id.searchBarClearIcon)
+        searchProgressBar = findViewById(R.id.searchProgressBar)
 
         placeholderImage = findViewById(R.id.ivPlaceholderImage)
         placeholderText = findViewById(R.id.tvPlaceholderText)
         placeholderButton = findViewById(R.id.btnPlaceholderRefresh)
-        placeholderLayout = findViewById(R.id.llPlaceholderLayuot)
+        placeholderLayout = findViewById(R.id.llPlaceholderLayout)
 
         historyText = findViewById(R.id.tvSearchHistory)
 
         // Достаём значения history из SP
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         historyTrackList =
             sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
 
@@ -92,7 +99,7 @@ class SearchActivity : AppCompatActivity() {
         searchBarClearButton.setOnClickListener {
             searchBar.setText("")
             searchBarTextValue = null
-            placeholderSaver = PLACEHOLDER_HIDDEN
+            placeholderStateSaver = PLACEHOLDER_HIDDEN
             hideSearchBarKeyboard()
             trackList.clear()
             trackAdapter.notifyDataSetChanged()
@@ -116,6 +123,7 @@ class SearchActivity : AppCompatActivity() {
                 if (s.isNullOrEmpty()) placheholderStateManager(PLACEHOLDER_HIDDEN)
                 searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
                 searchBarTextValue = s.toString()
+                searchTracksDebounce()
             }
         }
 
@@ -126,21 +134,12 @@ class SearchActivity : AppCompatActivity() {
         trackRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackRecyclerView.adapter = trackAdapter
-
-
-        // Фишка из теории - биндим кнопку DONE на вирт-клаве
-        searchBar.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                searchTracks(searchBarTextValue.toString())
-            }
-            false
-        }
     }
 
     override fun onResume() {
         super.onResume()
 
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         historyTrackList =
             sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
 
@@ -159,7 +158,7 @@ class SearchActivity : AppCompatActivity() {
         super.onStop()
 
         historyTrackList?.removeAt(historyTrackList?.size!! - 1)
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
 
         if (historyTrackList != null) {
             sharedPrefs.edit()
@@ -213,7 +212,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun manageListItemClick(track: Track) {
         // Тут мы выполняем работу с историей
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         val restoreTrackList = sharedPrefs.getString(HISTORY_KEY, null)
             ?.let { createTrackListFromJson(it) }
 
@@ -255,15 +254,15 @@ class SearchActivity : AppCompatActivity() {
             historyTrackList?.add(trackForButtonInflate)
         }
 
-        // Тут мы отправляем переходим на экран плеера, передавая ему объект на который нажали
+        // Переходим на экран плеера, передавая ему объект на который нажали
         val playerIntetn = Intent(this, PlayerActivity::class.java).apply {
-            putExtra(TRACK_KEY, createJsonFromTrack(track))
+            putExtra(PlaylistApp.TRACK_KEY, createJsonFromTrack(track))
         }
         startActivity(playerIntetn)
     }
 
     private fun clearHistory(track: Track) {
-        val sharedPrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         sharedPrefs.edit()
             .remove(HISTORY_KEY)
             .apply()
@@ -285,7 +284,7 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(EDIT_TEXT_VALUE, searchBarTextValue)
         trackListValue = Gson().toJson(trackList)
         outState.putString(TRACK_LIST_VALUE, trackListValue)
-        outState.putInt(PLACEHOLDER_SAVER, placeholderSaver)
+        outState.putInt(PLACEHOLDER_SAVER, placeholderStateSaver)
         super.onSaveInstanceState(outState)
     }
 
@@ -294,26 +293,30 @@ class SearchActivity : AppCompatActivity() {
         searchBarTextValue = savedInstanceState.getString(EDIT_TEXT_VALUE)
         searchBar.setText(searchBarTextValue)
         trackListValue = savedInstanceState.getString(TRACK_LIST_VALUE)
-        placeholderSaver = savedInstanceState.getInt(PLACEHOLDER_SAVER)
-        placheholderStateManager(placeholderSaver)
+        placeholderStateSaver = savedInstanceState.getInt(PLACEHOLDER_SAVER)
+        placheholderStateManager(placeholderStateSaver)
 
         val restoreTrackList = Gson().fromJson<ArrayList<Track>>(trackListValue, trackListType)
         trackList.clear()
         trackList.addAll(restoreTrackList)
     }
 
-    private fun searchTracks(searchBarTextValue: String) {
-        if (searchBarTextValue.trim().isNotEmpty()) {
+    private fun searchTracks(searchBarTextValue: String?) {
+        if (searchBarTextValue?.trim()?.isNotEmpty() == true) {
+            trackRecyclerView.isVisible = false
+            searchProgressBar.isVisible = true
             itunesService.getTracksOnSearch(searchBarTextValue)
                 .enqueue(object : Callback<TracksResponse> {
                     override fun onResponse(
                         call: Call<TracksResponse>,
                         response: Response<TracksResponse>
                     ) {
+                        searchProgressBar.isVisible = false
+                        trackRecyclerView.isVisible = true
                         when (response.code()) {
                             200 -> {
                                 if (!response.body()?.results.isNullOrEmpty()) {
-                                    placeholderSaver = PLACEHOLDER_HIDDEN
+                                    placeholderStateSaver = PLACEHOLDER_HIDDEN
                                     trackList.clear()
                                     trackList.addAll(response.body()?.results!!)
                                     trackAdapter.notifyDataSetChanged()
@@ -324,18 +327,18 @@ class SearchActivity : AppCompatActivity() {
                                     )
 
                                 } else {
-                                    placeholderSaver = 200
+                                    placeholderStateSaver = 200
                                     placheholderStateManager(response.code())
                                     Log.d(
                                         "RESPONSE_LOG",
-                                        "200 -LIST OFF. placeholderSaver = $placeholderSaver. code:${response.code()} " +
+                                        "200 -LIST OFF. placeholderSaver = $placeholderStateSaver. code:${response.code()} " +
                                                 "body:${response.body()?.results} "
                                     )
                                 }
                             }
 
                             else -> {
-                                placeholderSaver = PLACEHOLDER_ON_FAILURE
+                                placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                                 placheholderStateManager(response.code())
                                 Log.d(
                                     "RESPONSE_LOG",
@@ -346,7 +349,9 @@ class SearchActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        placeholderSaver = PLACEHOLDER_ON_FAILURE
+                        searchProgressBar.isVisible = false
+                        trackRecyclerView.isVisible = true
+                        placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                         placheholderStateManager(PLACEHOLDER_ON_FAILURE)
                         Log.d("RESPONSE_LOG", "FAILURE ")
                     }
@@ -383,7 +388,27 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    private fun clickListItemDebounce(): Boolean {
+        val current = isListItemClickAllowed
+        if (isListItemClickAllowed) {
+            isListItemClickAllowed = false
+            searchActivityHandler.postDelayed(
+                { isListItemClickAllowed = true },
+                CLICK_DEBOUNCE_DELAY
+            )
+        }
+        return current
+    }
+
+    private fun searchTracksDebounce() {
+        searchActivityHandler.removeCallbacks(searchRunnable)
+        searchActivityHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
     companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
         private const val TRACK_LIST_VALUE = "TRACK_LIST_VALUE"
         private const val PLACEHOLDER_SAVER = "PLACEHOLDER_SAVER"
@@ -402,7 +427,8 @@ class SearchActivity : AppCompatActivity() {
             "plm",
             "plm",
             "plm",
-            "plm"
+            "plm",
+            "plm",
         )
 
         private val trackListType: Type? = object : TypeToken<ArrayList<Track>>() {}.type

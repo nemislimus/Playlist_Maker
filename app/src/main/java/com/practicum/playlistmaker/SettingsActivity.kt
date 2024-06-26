@@ -16,7 +16,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val settingsSharePrefs = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
+        val settingsSharePrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
 
         val outOfSettingsButton = findViewById<Button>(R.id.outOfSettingsButton)
         val switchTheme = findViewById<Switch>(R.id.switchTheme)
@@ -34,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         // Реализуем переключатель темы
         switchTheme.setOnCheckedChangeListener { _, checked ->
             settingsSharePrefs.edit()
-                .putBoolean(THEME_KEY, checked)
+                .putBoolean(PlaylistApp.THEME_KEY, checked)
                 .apply()
 
             (applicationContext as PlaylistApp).switchTheme(checked)
