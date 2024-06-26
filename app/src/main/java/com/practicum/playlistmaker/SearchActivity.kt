@@ -321,29 +321,15 @@ class SearchActivity : AppCompatActivity() {
                                     trackList.addAll(response.body()?.results!!)
                                     trackAdapter.notifyDataSetChanged()
                                     placheholderStateManager(PLACEHOLDER_HIDDEN)
-                                    Log.d(
-                                        "RESPONSE_LOG",
-                                        "200 - LIST ON. code:${response.code()} body:${response.body()?.results} "
-                                    )
-
                                 } else {
                                     placeholderStateSaver = 200
                                     placheholderStateManager(response.code())
-                                    Log.d(
-                                        "RESPONSE_LOG",
-                                        "200 -LIST OFF. placeholderSaver = $placeholderStateSaver. code:${response.code()} " +
-                                                "body:${response.body()?.results} "
-                                    )
                                 }
                             }
 
                             else -> {
                                 placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                                 placheholderStateManager(response.code())
-                                Log.d(
-                                    "RESPONSE_LOG",
-                                    "NOT 200 -LIST OFF. code:${response.code()} body:${response.body()} "
-                                )
                             }
                         }
                     }
@@ -353,7 +339,6 @@ class SearchActivity : AppCompatActivity() {
                         trackRecyclerView.isVisible = true
                         placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                         placheholderStateManager(PLACEHOLDER_ON_FAILURE)
-                        Log.d("RESPONSE_LOG", "FAILURE ")
                     }
                 })
         }

@@ -135,6 +135,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        if (playerState == STATE_PLAYING) trackOnAir = !trackOnAir!!
         pauseMediaPlayer()
     }
 
@@ -189,6 +190,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun playbackControl() {
         when (playerState) {
             STATE_PLAYING -> {
+                trackOnAir = !trackOnAir!!
                 pauseMediaPlayer()
             }
 
@@ -208,7 +210,6 @@ class PlayerActivity : AppCompatActivity() {
     private fun pauseMediaPlayer() {
         mediaPlayer.pause()
         playerState = STATE_PAUSED
-        trackOnAir = !trackOnAir!!
         playButton.setImageResource(R.drawable.play_button)
     }
 
