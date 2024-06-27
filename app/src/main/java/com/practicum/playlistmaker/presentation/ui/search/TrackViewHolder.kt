@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.search
 
 import android.content.Context
 import android.util.TypedValue
@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.entities.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 

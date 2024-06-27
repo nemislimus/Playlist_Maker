@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/SearchScreenLayout"
     android:orientation="vertical"
-    tools:context=".SearchActivity">
+    tools:context=".presentation.ui.search.SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/searchToolBar"

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.search
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -23,6 +22,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.presentation.ui.PlaylistApp
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.network.Retrofit
+import com.practicum.playlistmaker.data.dto.TracksResponse
+import com.practicum.playlistmaker.presentation.ui.createJsonFromTrack
+import com.practicum.playlistmaker.domain.entities.Track
+import com.practicum.playlistmaker.presentation.ui.player.PlayerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -370,7 +376,6 @@ class SearchActivity : AppCompatActivity() {
                 placeholderText.setText(R.string.search_error_no_internet)
             }
         }
-
     }
 
     private fun clickListItemDebounce(): Boolean {
