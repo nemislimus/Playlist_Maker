@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.settings
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Switch
 import android.widget.Toast
+import com.practicum.playlistmaker.presentation.ui.PlaylistApp
+import com.practicum.playlistmaker.R
 
 
 class SettingsActivity : AppCompatActivity() {

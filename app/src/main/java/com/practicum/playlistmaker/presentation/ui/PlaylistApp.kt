@@ -1,8 +1,9 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
+import com.practicum.playlistmaker.domain.entities.Track
 
 class PlaylistApp: Application() {
 
