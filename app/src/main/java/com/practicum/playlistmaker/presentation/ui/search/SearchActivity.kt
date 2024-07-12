@@ -26,6 +26,7 @@ import com.practicum.playlistmaker.presentation.ui.PlaylistApp
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.data.network.Retrofit
 import com.practicum.playlistmaker.data.dto.TracksResponse
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.presentation.ui.createJsonFromTrack
 import com.practicum.playlistmaker.domain.entities.Track
 import com.practicum.playlistmaker.presentation.ui.player.PlayerActivity
@@ -36,7 +37,8 @@ import java.lang.reflect.Type
 
 class SearchActivity : AppCompatActivity() {
 
-    // переменные для сохранения состояний и хранения данных
+    private lateinit var binding: ActivitySearchBinding
+
     private var searchBarTextValue: String? = null
     private var placeholderStateSaver: Int = 0
 
@@ -44,21 +46,19 @@ class SearchActivity : AppCompatActivity() {
     private var trackListValue: String? = Gson().toJson(trackList)
     private var historyTrackList: ArrayList<Track>? = null
 
-    // переменные для основных View на экране
-    private lateinit var searchBar: EditText
-    private lateinit var trackRecyclerView: RecyclerView
-    private lateinit var outOfSearchToolbar: Toolbar
-    private lateinit var searchBarClearButton: ImageView
-    private lateinit var searchProgressBar: ProgressBar
-
+    // Placeholder elements
     private lateinit var placeholderImage: ImageView
     private lateinit var placeholderText: TextView
-    private lateinit var placeholderButton: Button
+    private lateinit var placeholderRefreshButton: Button
     private lateinit var placeholderLayout: LinearLayout
-
     private lateinit var historyText: TextView
+    // Others Views
+    private lateinit var outOfSearchButton: Toolbar
+    private lateinit var searchBar: EditText
+    private lateinit var searchBarClearButton: ImageView
+    private lateinit var trackRecyclerView: RecyclerView
+    private lateinit var searchProgressBar: ProgressBar
 
-    // Рабочие инструменты для настроек и логики
     private var trackAdapter = TrackAdapter(
         { if (clickListItemDebounce()) manageListItemClick(it) },
         { clearHistory(it) },
@@ -71,37 +71,34 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        outOfSearchToolbar = findViewById(R.id.searchToolBar)
-        searchBar = findViewById(R.id.searchBarEditText)
-        searchBarClearButton = findViewById(R.id.searchBarClearIcon)
-        searchProgressBar = findViewById(R.id.searchProgressBar)
+        outOfSearchButton = binding.searchOutButton
+        searchBar = binding.searchBarEditText
+        searchBarClearButton = binding.searchBarClearButton
+        trackRecyclerView = binding.rvTrackList
+        searchProgressBar = binding.searchProgressBar
 
-        placeholderImage = findViewById(R.id.ivPlaceholderImage)
-        placeholderText = findViewById(R.id.tvPlaceholderText)
-        placeholderButton = findViewById(R.id.btnPlaceholderRefresh)
-        placeholderLayout = findViewById(R.id.llPlaceholderLayout)
+        placeholderImage = binding.llPlaceholderLayout.ivPlaceholderImage
+        placeholderText = binding.llPlaceholderLayout.tvPlaceholderText
+        placeholderRefreshButton = binding.llPlaceholderLayout.btnPlaceholderRefresh
+        placeholderLayout = binding.llPlaceholderLayout.root
+        historyText = binding.tvSearchHistoryText
 
-        historyText = findViewById(R.id.tvSearchHistory)
-
-        // Достаём значения history из SP
+        // Get history from SP
         val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         historyTrackList =
             sharedPrefs.getString(HISTORY_KEY, null)?.let { createTrackListFromJson(it) }
 
-
-        //Нажатие на кнопку плейсхолдера "Обновить"
-        placeholderButton.setOnClickListener {
+        placeholderRefreshButton.setOnClickListener {
             searchTracks(searchBarTextValue.toString())
         }
 
-        //Выход с экрана поиска
-        outOfSearchToolbar.setOnClickListener {
+        binding.searchOutButton.setOnClickListener {
             finish()
         }
 
-        // Очищаем строку поиска и убираем виртуальную клавуатуру
         searchBarClearButton.setOnClickListener {
             searchBar.setText("")
             searchBarTextValue = null
@@ -116,7 +113,7 @@ class SearchActivity : AppCompatActivity() {
             manageHistoryVisibilityOnChanges(hasFocus, searchBar.text.toString())
         }
 
-        // Переопределяем TextWatcher
+        // TextWatcher
         val searchBarTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -135,8 +132,7 @@ class SearchActivity : AppCompatActivity() {
 
         searchBar.addTextChangedListener(searchBarTextWatcher)
 
-        // Оформляем список треков (нужный список треков для отображения подгружаем в зависимости от состояния активити)
-        trackRecyclerView = findViewById(R.id.rv_trackList)
+        // Configure RecyclerView
         trackRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackRecyclerView.adapter = trackAdapter
@@ -173,7 +169,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    // Видимость "крестика" для очистки строки поиска
     private fun clearSearchBarButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
@@ -182,7 +177,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    // Спрятать клавиатурку
     private fun hideSearchBarKeyboard() {
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -217,7 +211,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun manageListItemClick(track: Track) {
-        // Тут мы выполняем работу с историей
+        // Make work with history
         val sharedPrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
         val restoreTrackList = sharedPrefs.getString(HISTORY_KEY, null)
             ?.let { createTrackListFromJson(it) }
@@ -260,7 +254,7 @@ class SearchActivity : AppCompatActivity() {
             historyTrackList?.add(trackForButtonInflate)
         }
 
-        // Переходим на экран плеера, передавая ему объект на который нажали
+        // Go to Player by clicked Track
         val playerIntetn = Intent(this, PlayerActivity::class.java).apply {
             putExtra(PlaylistApp.TRACK_KEY, createJsonFromTrack(track))
         }
@@ -363,7 +357,7 @@ class SearchActivity : AppCompatActivity() {
             200 -> {
                 placeholderImage.visibility = View.VISIBLE
                 placeholderText.visibility = View.VISIBLE
-                placeholderButton.visibility = View.GONE
+                placeholderRefreshButton.visibility = View.GONE
                 placeholderImage.setImageResource(R.drawable.not_found)
                 placeholderText.setText(R.string.search_error_not_found)
             }
@@ -371,7 +365,7 @@ class SearchActivity : AppCompatActivity() {
             else -> {
                 placeholderImage.visibility = View.VISIBLE
                 placeholderText.visibility = View.VISIBLE
-                placeholderButton.visibility = View.VISIBLE
+                placeholderRefreshButton.visibility = View.VISIBLE
                 placeholderImage.setImageResource(R.drawable.no_internet)
                 placeholderText.setText(R.string.search_error_no_internet)
             }

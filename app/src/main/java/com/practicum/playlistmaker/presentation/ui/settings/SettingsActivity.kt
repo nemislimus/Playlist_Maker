@@ -10,31 +10,35 @@ import android.widget.Switch
 import android.widget.Toast
 import com.practicum.playlistmaker.presentation.ui.PlaylistApp
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val settingsSharePrefs = getSharedPreferences(PlaylistApp.APP_PREFERENCES, MODE_PRIVATE)
 
-        val outOfSettingsButton = findViewById<Button>(R.id.outOfSettingsButton)
-        val switchTheme = findViewById<Switch>(R.id.switchTheme)
-        val shareButton = findViewById<Button>(R.id.shareButton)
-        val supportButton = findViewById<Button>(R.id.supportButton)
-        val userAgreementButton = findViewById<Button>(R.id.userAgreementButton)
+//        val outOfSettingsButton = binding.outOfSettingsButton
+//        val switchTheme = binding.switchTheme
+//        val shareButton = binding.shareButton
+//        val supportButton = binding.supportButton
+//        val userAgreementButton = binding.userAgreementButton
 
-        switchTheme.isChecked = (applicationContext as PlaylistApp).darkThemeValue
+        binding.switchTheme.isChecked = (applicationContext as PlaylistApp).darkThemeValue
 
         //Выход с экрана настроек
-        outOfSettingsButton.setOnClickListener {
+        binding.outOfSettingsButton.setOnClickListener {
             finish()
         }
 
         // Реализуем переключатель темы
-        switchTheme.setOnCheckedChangeListener { _, checked ->
+        binding.switchTheme.setOnCheckedChangeListener { _, checked ->
             settingsSharePrefs.edit()
                 .putBoolean(PlaylistApp.THEME_KEY, checked)
                 .apply()
@@ -43,7 +47,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Шарим ссылку во все возможные приложения
-        shareButton.setOnClickListener {
+        binding.shareButton.setOnClickListener {
             val linkMessage = getString(R.string.link_share_android_dev)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
@@ -64,7 +68,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Пишем письмо в поддержку
-        supportButton.setOnClickListener {
+        binding.supportButton.setOnClickListener {
             val message = getString(R.string.support_message_text)
             val messageTopic = getString(R.string.support_message_topic)
             val email = arrayOf(getString(R.string.support_email))
@@ -88,7 +92,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Открываем пользовательское соглашение
-        userAgreementButton.setOnClickListener {
+        binding.userAgreementButton.setOnClickListener {
             val agreementLink = Uri.parse(getString(R.string.link_userAgreementButton))
             val agreementIntent = Intent(Intent.ACTION_VIEW, agreementLink)
 

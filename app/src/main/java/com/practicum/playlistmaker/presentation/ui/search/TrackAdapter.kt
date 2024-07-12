@@ -1,7 +1,10 @@
 package com.practicum.playlistmaker.presentation.ui.search
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.databinding.ClearHistoryBtnItemBinding
+import com.practicum.playlistmaker.databinding.TrackListItemBinding
 import com.practicum.playlistmaker.domain.entities.Track
 
 class TrackAdapter(
@@ -12,9 +15,11 @@ class TrackAdapter(
     var tracks: List<Track> = arrayListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseTrackViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+
         return when(viewType) {
-            TYPE_CLEAR_BUTTON -> ClearHistoryButtonViewHolder(parent)
-            TYPE_TRACK -> TrackViewHolder(parent)
+            TYPE_CLEAR_BUTTON -> ClearHistoryButtonViewHolder(ClearHistoryBtnItemBinding.inflate(layoutInflater, parent, false))
+            TYPE_TRACK -> TrackViewHolder(TrackListItemBinding.inflate(layoutInflater, parent, false))
             else -> throw IllegalAccessException("Неизвестный тип элемента")
         }
     }
