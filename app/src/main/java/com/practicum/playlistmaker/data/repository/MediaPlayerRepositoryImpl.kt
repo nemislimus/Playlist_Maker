@@ -25,8 +25,6 @@ class MediaPlayerRepositoryImpl: PlayerRepository{
         player.setOnCompletionListener {
             playerState = PlayerState.PREPARED
             listener.onChange(playerState)
-//            playButton.setImageResource(R.drawable.play_button)
-//            manageTimer(null)
         }
     }
 

@@ -120,7 +120,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         playerInteractor.release()
-        manageTimer()
+        manageTimer() // clean by playerActivityHandler.removeCallbacksAndMessages(null) inside
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -134,7 +134,6 @@ class PlayerActivity : AppCompatActivity() {
         trackInPlaylist = savedInstanceState.getBoolean(IN_PLAYLIST_VALUE)
         trackInFavorites = savedInstanceState.getBoolean(IN_FAVORITE_VALUE)
 
-        // Устанавливаем отображение кнопочек
         setButtonState(addToPlaylist, trackInPlaylist)
         setButtonState(addToFavorite, trackInFavorites)
     }
