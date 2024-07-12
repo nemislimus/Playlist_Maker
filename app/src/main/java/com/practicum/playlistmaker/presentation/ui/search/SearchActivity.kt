@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.search
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -23,6 +22,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.presentation.ui.PlaylistApp
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.network.Retrofit
+import com.practicum.playlistmaker.data.dto.TracksResponse
+import com.practicum.playlistmaker.presentation.ui.createJsonFromTrack
+import com.practicum.playlistmaker.domain.entities.Track
+import com.practicum.playlistmaker.presentation.ui.player.PlayerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -321,29 +327,15 @@ class SearchActivity : AppCompatActivity() {
                                     trackList.addAll(response.body()?.results!!)
                                     trackAdapter.notifyDataSetChanged()
                                     placheholderStateManager(PLACEHOLDER_HIDDEN)
-                                    Log.d(
-                                        "RESPONSE_LOG",
-                                        "200 - LIST ON. code:${response.code()} body:${response.body()?.results} "
-                                    )
-
                                 } else {
                                     placeholderStateSaver = 200
                                     placheholderStateManager(response.code())
-                                    Log.d(
-                                        "RESPONSE_LOG",
-                                        "200 -LIST OFF. placeholderSaver = $placeholderStateSaver. code:${response.code()} " +
-                                                "body:${response.body()?.results} "
-                                    )
                                 }
                             }
 
                             else -> {
                                 placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                                 placheholderStateManager(response.code())
-                                Log.d(
-                                    "RESPONSE_LOG",
-                                    "NOT 200 -LIST OFF. code:${response.code()} body:${response.body()} "
-                                )
                             }
                         }
                     }
@@ -353,7 +345,6 @@ class SearchActivity : AppCompatActivity() {
                         trackRecyclerView.isVisible = true
                         placeholderStateSaver = PLACEHOLDER_ON_FAILURE
                         placheholderStateManager(PLACEHOLDER_ON_FAILURE)
-                        Log.d("RESPONSE_LOG", "FAILURE ")
                     }
                 })
         }
@@ -385,7 +376,6 @@ class SearchActivity : AppCompatActivity() {
                 placeholderText.setText(R.string.search_error_no_internet)
             }
         }
-
     }
 
     private fun clickListItemDebounce(): Boolean {
