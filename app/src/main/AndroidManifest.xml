@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
-        android:name=".presentation.ui.PlaylistApp"
+        android:name=".ui.PlaylistApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,19 +17,19 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="33">
         <activity
-            android:name=".presentation.ui.player.PlayerActivity"
+            android:name=".ui.player.activity.PlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.ui.search.SearchActivity"
+            android:name=".ui.search.activity.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.ui.mediateka.MediatekaActivity"
+            android:name=".ui.mediateka.MediatekaActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.ui.settings.SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.ui.main.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
