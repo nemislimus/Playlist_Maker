@@ -13,7 +13,7 @@ import com.practicum.playlistmaker.ui.PlaylistApp
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.ui.createTrackFromJson
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
-import com.practicum.playlistmaker.ui.player.model.PlayerState
+import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
 

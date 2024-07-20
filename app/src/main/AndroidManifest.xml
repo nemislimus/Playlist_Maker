@@ -26,7 +26,7 @@
             android:name=".ui.mediateka.MediatekaActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name=".ui.settings.activity.SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"

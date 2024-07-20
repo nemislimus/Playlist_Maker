@@ -4,7 +4,7 @@ import android.media.MediaPlayer
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.api.PlayerRepository
-import com.practicum.playlistmaker.ui.player.model.PlayerState
+import com.practicum.playlistmaker.domain.player.models.PlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 

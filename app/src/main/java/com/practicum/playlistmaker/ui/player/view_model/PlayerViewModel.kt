@@ -12,7 +12,7 @@ import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.dpToPx
-import com.practicum.playlistmaker.ui.player.model.PlayerState
+import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
 import java.text.SimpleDateFormat
 import java.util.Locale
