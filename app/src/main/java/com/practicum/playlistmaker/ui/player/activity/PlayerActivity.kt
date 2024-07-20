@@ -7,52 +7,41 @@ import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.ui.PlaylistApp
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.ui.search.TrackViewHolder
 import com.practicum.playlistmaker.ui.createTrackFromJson
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
-import com.practicum.playlistmaker.domain.player.PlayerInteractor
-import com.practicum.playlistmaker.domain.player.model.PlayerState
-import com.practicum.playlistmaker.domain.search.models.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.practicum.playlistmaker.ui.player.model.PlayerState
+import com.practicum.playlistmaker.ui.player.model.PlayerUiState
+import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
-    private var hasCollection: Boolean = true
-    private val playerActivityHandler = Handler(Looper.getMainLooper())
-
-    private lateinit var currentTrack: Track
     private var trackInPlaylist: Boolean = false
     private var trackInFavorites: Boolean = false
 
-    private val playerInteractor = Creator.provideMediaPlayaerInteractor()
     private var timerRunnable: Runnable? = null
-
+    private val playerActivityHandler = Handler(Looper.getMainLooper())
+    private lateinit var viewModel: PlayerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        currentTrack =
-            intent.getStringExtra(PlaylistApp.TRACK_KEY)?.let { createTrackFromJson(it) }!!
-
-        binding.ivPlayButton.apply { isEnabled = false }
-
-        setUiValues(currentTrack)
-
-        preparePlayer()
+        viewModel = ViewModelProvider(
+            this,
+            PlayerViewModel
+                .getViewModelFactory( track = intent.getStringExtra(PlaylistApp.TRACK_KEY)?.let { createTrackFromJson(it) }!! )
+        )[PlayerViewModel::class.java]
 
         binding.ivPlayButton.setOnClickListener {
-            when(playerInteractor.getPlayerState()) {
-                PlayerState.PREPARED, PlayerState.PAUSED -> playerInteractor.start()
-                PlayerState.PLAYING -> playerInteractor.pause()
+            when(viewModel.getPlayerState()) {
+                PlayerState.PREPARED, PlayerState.PAUSED -> viewModel.playTrack()
+                PlayerState.PLAYING -> viewModel.pauseTrack()
                 PlayerState.DEFAULT -> {}
             }
         }
@@ -70,22 +59,39 @@ class PlayerActivity : AppCompatActivity() {
         binding.tbBackFromPlayerButton.setOnClickListener {
             finish()
         }
+
+        viewModel.apply {
+            getPlayerUiStateLiveData().observe(this@PlayerActivity) { stateUi ->
+                setUi(stateUi)
+            }
+
+            getPlayerStateLiveData().observe(this@PlayerActivity) { playerState ->
+                managePlayer(playerState)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.setPlayButtonAsPrepared { updatePlayButtonAlpha() }
+        viewModel.preparePlayer()
     }
 
     override fun onPause() {
         super.onPause()
-        playerInteractor.pause()
+        viewModel.pauseTrack()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        playerInteractor.release()
-        manageTimer() // clean by playerActivityHandler.removeCallbacksAndMessages(null) inside
+        playerActivityHandler.removeCallbacksAndMessages(null)
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(IN_PLAYLIST_VALUE, trackInPlaylist)
         outState.putBoolean(IN_FAVORITE_VALUE, trackInFavorites)
+        outState.putString(VALUE_TIMER, binding.tvTrackTimer.text.toString())
         super.onSaveInstanceState(outState)
     }
 
@@ -93,82 +99,61 @@ class PlayerActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         trackInPlaylist = savedInstanceState.getBoolean(IN_PLAYLIST_VALUE)
         trackInFavorites = savedInstanceState.getBoolean(IN_FAVORITE_VALUE)
+        val timerValue = savedInstanceState.getString(VALUE_TIMER).toString()
 
+        binding.tvTrackTimer.text = timerValue
         setButtonState(binding.ivAddToPlaylistButton, trackInPlaylist)
         setButtonState(binding.ivAddToFavoritesButton, trackInFavorites)
     }
 
-    private fun setUiValues(track: Track?) {
-        if (track?.collectionName.isNullOrEmpty()) {
-            hasCollection = false
-            binding.albumInfoGroup.isVisible = false
-        }
+    private fun setUi(stateUi: PlayerUiState) {
 
-        track?.let {
-            Glide.with(this)
-                .load(track.artworkUrl512)
-                .placeholder(R.drawable.ic_placeholder_track_image)
-                .centerCrop()
-                .transform(RoundedCorners(TrackViewHolder.dpToPx(8f, this)))
-                .into(binding.ivAlbumCover)
+        Glide.with(this)
+            .load(stateUi.coverLink)
+            .placeholder(R.drawable.ic_placeholder_track_image)
+            .centerCrop()
+            .transform(stateUi.coverCornerRadius)
+            .into(binding.ivAlbumCover)
 
-            if (hasCollection) binding.tvTrackAlbumValue.text = track.collectionName
-            binding.tvTrackNamePlayer.text = track.trackName
-            binding.tvArtistNamePlayer.text = track.artistName
-            binding.tvTrackDurationValue.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
-            binding.tvTrackTimer.text = ZERO_TIMER
-            binding.tvTrackReleaseDateValue.text = track.releaseDate.substring(0, 4)
-            binding.tvTrackGenreValue.text = track.primaryGenreName
-            binding.tvTrackCountryValue.text = track.country
-        }
+        binding.albumInfoGroup.isVisible = stateUi.hasCollection
+        if (stateUi.hasCollection) binding.tvTrackAlbumValue.text = stateUi.collectionName
+        binding.tvTrackNamePlayer.text = stateUi.trackName
+        binding.tvArtistNamePlayer.text = stateUi.artistName
+        binding.tvTrackDurationValue.text = stateUi.trackDuration
+        binding.tvTrackTimer.text = ZERO_TIMER
+        binding.tvTrackReleaseDateValue.text = stateUi.releaseDate
+        binding.tvTrackGenreValue.text = stateUi.genreName
+        binding.tvTrackCountryValue.text = stateUi.country
     }
 
-    private fun preparePlayer() {
-        playerInteractor.setPlayerDataSource(currentTrack)
-        playerInteractor.prepare(
-            listener = object: PlayerInteractor.OnStateChangeListener {
-                override fun onChange(state: PlayerState) {
-                    when(state) {
-                        PlayerState.PREPARED -> {
-                            binding.ivPlayButton.isEnabled = true
-                            binding.ivPlayButton.setImageResource(R.drawable.play_button)
-                            manageTimer()
-                        }
+    private fun updatePlayButtonAlpha() {
+        binding.ivPlayButton.alpha = 1.0f
+    }
 
-                        PlayerState.PLAYING -> {
-                            binding.ivPlayButton.setImageResource(R.drawable.pause_button)
-                            manageTimer()
-                        }
-
-                        PlayerState.PAUSED -> {
-                            binding.ivPlayButton.setImageResource(R.drawable.play_button)
-                            manageTimer()
-                        }
-
-                        PlayerState.DEFAULT -> {
-                            binding.ivPlayButton.isEnabled = false
-                            binding.ivPlayButton.setImageResource(R.drawable.play_button)
-                            manageTimer()
-                        }
-                    }
-                }
+    private fun managePlayer(playerState: PlayerState) {
+        when(playerState) {
+             PlayerState.PREPARED -> {
+                binding.ivPlayButton.isEnabled = true
+                binding.ivPlayButton.setImageResource(R.drawable.play_button)
+                 manageTimerByPlayerState(playerState)
             }
-        )
-    }
 
-    private fun setButtonState(actionView: View, state: Boolean) {
-        when {
-            (actionView == binding.ivAddToPlaylistButton) -> (actionView as ImageView)
-                .setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
+            PlayerState.PLAYING -> {
+                binding.ivPlayButton.setImageResource(R.drawable.pause_button)
+                manageTimerByPlayerState(playerState)
+            }
 
-            (actionView == binding.ivAddToFavoritesButton) -> (actionView as ImageView)
-                .setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
+            PlayerState.PAUSED -> {
+                binding.ivPlayButton.setImageResource(R.drawable.play_button)
+                manageTimerByPlayerState(playerState)
+            }
+
+            PlayerState.DEFAULT -> {
+                binding.ivPlayButton.isEnabled = false
+                binding.ivPlayButton.setImageResource(R.drawable.play_button)
+                manageTimerByPlayerState(playerState)
+            }
         }
-    }
-
-    private fun manageTimer() {
-        manageTimerByPlayerState(playerInteractor.getPlayerState())
     }
 
     private fun manageTimerByPlayerState(state: PlayerState) {
@@ -181,7 +166,7 @@ class PlayerActivity : AppCompatActivity() {
             PlayerState.PLAYING -> {
                 val runnable = object : Runnable {
                     override fun run() {
-                        binding.tvTrackTimer.text = playerInteractor.getPlayerCurrentTimerPosition()
+                        binding.tvTrackTimer.text = viewModel.getCurrentTimerPosition()
                         playerActivityHandler.postDelayed(this, TIMER_DELAY)
                     }
                 }
@@ -194,8 +179,19 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    private fun setButtonState(actionView: View, state: Boolean) {
+        when {
+            (actionView == binding.ivAddToPlaylistButton) -> (actionView as ImageView)
+                .setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
+
+            (actionView == binding.ivAddToFavoritesButton) -> (actionView as ImageView)
+                .setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
+        }
+    }
+
     companion object {
         private const val ZERO_TIMER = "00:00"
+        private const val VALUE_TIMER = "timer_value"
         private const val TIMER_DELAY = 400L
 
         private const val IN_PLAYLIST_VALUE = "IN_PLAYLIST_VALUE"

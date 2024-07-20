@@ -120,7 +120,8 @@
             app:layout_constraintTop_toBottomOf="@id/tvArtistNamePlayer"
             app:layout_constraintStart_toEndOf="@id/ivAddToPlaylistButton"
             app:layout_constraintEnd_toStartOf="@id/ivAddToFavoritesButton"
-            android:visibility="visible"/>
+            android:visibility="visible"
+            android:alpha="0.3"/>
 
         <ImageView
             android:id="@+id/ivAddToFavoritesButton"

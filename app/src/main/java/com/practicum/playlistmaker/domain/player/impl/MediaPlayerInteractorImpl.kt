@@ -3,10 +3,10 @@ package com.practicum.playlistmaker.domain.player.impl
 
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.api.PlayerRepository
-import com.practicum.playlistmaker.domain.player.model.PlayerState
+import com.practicum.playlistmaker.ui.player.model.PlayerState
 import com.practicum.playlistmaker.domain.search.models.Track
 
-class MediaPlayaerInteractorImpl(
+class MediaPlayerInteractorImpl(
     private val playerRepository: PlayerRepository
 ): PlayerInteractor {
     override fun prepare(listener: PlayerInteractor.OnStateChangeListener) {

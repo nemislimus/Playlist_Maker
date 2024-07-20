@@ -7,7 +7,7 @@ import com.practicum.playlistmaker.data.search.network.RetrofitNetworkClient
 import com.practicum.playlistmaker.data.search.storage.SharedPrefsTracksStorage
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.api.PlayerRepository
-import com.practicum.playlistmaker.domain.player.impl.MediaPlayaerInteractorImpl
+import com.practicum.playlistmaker.domain.player.impl.MediaPlayerInteractorImpl
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.api.TracksRepository
 import com.practicum.playlistmaker.domain.search.imp.TracksInteractorImpl
@@ -18,8 +18,8 @@ object Creator {
         return TracksInteractorImpl(getTracksRepository(context))
     }
 
-    fun provideMediaPlayaerInteractor(): PlayerInteractor {
-        return MediaPlayaerInteractorImpl(getMediaPlayerRepository())
+    fun provideMediaPlayerInteractor(): PlayerInteractor {
+        return MediaPlayerInteractorImpl(getMediaPlayerRepository())
     }
 
     private fun getTracksRepository(context: Context): TracksRepository {

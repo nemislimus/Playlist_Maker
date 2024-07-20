@@ -4,7 +4,7 @@ import android.media.MediaPlayer
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.api.PlayerRepository
-import com.practicum.playlistmaker.domain.player.model.PlayerState
+import com.practicum.playlistmaker.ui.player.model.PlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -19,30 +19,29 @@ class MediaPlayerRepositoryImpl: PlayerRepository {
 
         player.setOnPreparedListener {
             playerState = PlayerState.PREPARED
-            listener.onChange(playerState)
+            listener.onChange()
         }
 
         player.setOnCompletionListener {
             playerState = PlayerState.PREPARED
-            listener.onChange(playerState)
+            listener.onChange()
         }
     }
 
     override fun startPlayer() {
         player.start()
         playerState = PlayerState.PLAYING
-        listener.onChange(playerState)
+        listener.onChange()
     }
 
     override fun pausePlayer() {
         player.pause()
         playerState = PlayerState.PAUSED
-        listener.onChange(playerState)
+        listener.onChange()
     }
 
     override fun releasePlayer() {
         playerState = PlayerState.DEFAULT
-        listener.onChange(playerState)
         player.release()
     }
 

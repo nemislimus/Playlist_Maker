@@ -1,12 +1,11 @@
 package com.practicum.playlistmaker.ui.search
 
-import android.content.Context
-import android.util.TypedValue
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.TrackListItemBinding
 import com.practicum.playlistmaker.domain.search.models.Track
+import com.practicum.playlistmaker.ui.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -27,12 +26,4 @@ class TrackViewHolder(private val binding: TrackListItemBinding) : BaseTrackView
             .into(binding.ivTrackImage)
     }
 
-    companion object {
-        fun dpToPx(dp: Float, context: Context): Int {
-            return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                context.resources.displayMetrics).toInt()
-        }
-    }
 }

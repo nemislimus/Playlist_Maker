@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.ui
 
 import android.app.Application
+import android.content.Context
+import android.util.TypedValue
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
 import com.practicum.playlistmaker.domain.search.models.Track
@@ -41,4 +43,11 @@ fun createJsonFromTrack(track: Track): String {
 
 fun createTrackFromJson(jsonValue: String): Track {
     return Gson().fromJson(jsonValue, Track::class.java)
+}
+
+fun dpToPx(dp: Float, context: Context): Int {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        context.resources.displayMetrics).toInt()
 }
