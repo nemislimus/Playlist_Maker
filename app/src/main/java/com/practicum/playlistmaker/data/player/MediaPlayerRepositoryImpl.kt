@@ -2,7 +2,6 @@ package com.practicum.playlistmaker.data.player
 
 import android.media.MediaPlayer
 import com.practicum.playlistmaker.domain.search.models.Track
-import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.api.PlayerRepository
 import com.practicum.playlistmaker.domain.player.models.PlayerState
 import java.text.SimpleDateFormat
@@ -11,9 +10,9 @@ import java.util.Locale
 class MediaPlayerRepositoryImpl: PlayerRepository {
     private val player = MediaPlayer()
     private var playerState: PlayerState = PlayerState.DEFAULT
-    private lateinit var listener: PlayerInteractor.OnStateChangeListener
+    private lateinit var listener: PlayerRepository.OnStateChangeListener
 
-    override fun preparePlayer(listener: PlayerInteractor.OnStateChangeListener) {
+    override fun preparePlayer(listener: PlayerRepository.OnStateChangeListener) {
         this.listener = listener
         player.prepareAsync()
 

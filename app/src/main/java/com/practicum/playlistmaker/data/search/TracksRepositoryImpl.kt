@@ -15,10 +15,10 @@ class TracksRepositoryImpl(
     override fun searchTracks(expression: String): Resource<List<Track>> {
         val response = networkClient.doRequest(TracksSearchRequest(expression))
         return when (response.resultCode) {
-            -1 -> {
+            NetworkClient.NO_CONNECTION_CODE -> {
                 Resource.Error(Resource.CHECK_CONNECTION)
             }
-            200 -> {
+            NetworkClient.SUCCESS_CODE -> {
                 Resource.Success((response as TracksSearchResponse).results.map {
                     TrackDto.convertToTrack(it)
                 })

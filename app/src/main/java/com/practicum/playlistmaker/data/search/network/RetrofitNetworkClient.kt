@@ -13,10 +13,10 @@ class RetrofitNetworkClient (private val context: Context): NetworkClient {
 
     override fun doRequest(requestModel: Any): NetworkResponse {
         if (!isConnected()) {
-            return NetworkResponse().apply { resultCode = -1 }
+            return NetworkResponse().apply { resultCode = NetworkClient.NO_CONNECTION_CODE }
         }
         if (requestModel !is TracksSearchRequest) {
-            return NetworkResponse().apply { resultCode = 400 }
+            return NetworkResponse().apply { resultCode = NetworkClient.BAD_REQUEST_CODE }
         }
 
         val response = itunesService.getTracksOnSearch(requestModel.expression).execute()

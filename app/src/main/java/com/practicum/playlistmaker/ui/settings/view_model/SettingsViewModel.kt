@@ -32,16 +32,24 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     }
 
 
-    fun shareApp() {
-        sharingInteractor.shareApp()
+    fun shareApp(linkResourceId: Int) {
+        sharingInteractor.shareApp(linkResourceId)
     }
 
-    fun openTerms() {
-        sharingInteractor.openTerms()
+    fun openTerms(linkResourceId: Int) {
+        sharingInteractor.openTerms(linkResourceId)
     }
 
-    fun openSupportEmail() {
-        sharingInteractor.openSupport()
+    fun openSupportEmail(
+        emailAddressResourceId: Int,
+        messageTopicResourceId: Int,
+        messageResourceId: Int,
+    ) {
+        sharingInteractor.openSupport(
+            emailAddressResourceId = emailAddressResourceId,
+            messageTopicResourceId = messageTopicResourceId,
+            messageResourceId = messageResourceId
+        )
     }
 
     companion object {

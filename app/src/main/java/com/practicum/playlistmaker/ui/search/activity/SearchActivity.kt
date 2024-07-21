@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -114,8 +113,10 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                manageContentVisibilityOnChanges(s.toString())
                 manageHistoryVisibilityOnChanges(searchBar.hasFocus(), s.toString())
-                searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
+//                searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
+                searchBarClearButton.isVisible = clearSearchBarButtonVisibility(s)
                 searchBarTextValue = s.toString()
                 viewModel.searchDebounce(s.toString())
             }
@@ -191,12 +192,8 @@ class SearchActivity : AppCompatActivity() {
         showContent(historyTracks)
     }
 
-    private fun clearSearchBarButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+    private fun clearSearchBarButtonVisibility(s: CharSequence?): Boolean {
+        return !s.isNullOrEmpty()
     }
 
     private fun hideSearchBarKeyboard() {
@@ -217,11 +214,16 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun manageContentVisibilityOnChanges(text: String?) {
+        if ( (viewModel.observeState().value is TracksState.Content) && text?.isEmpty() == true )
+            viewModel.showHistory()
+    }
+
     private fun manageListItemClick(track: Track) {
 
         viewModel.putTrackToHistory(track)
 
-        if (historyText.visibility == View.VISIBLE) {
+        if (historyText.isVisible) {
             trackAdapter.notifyDataSetChanged()
             trackListRecyclerView.scrollToPosition(0)
         }

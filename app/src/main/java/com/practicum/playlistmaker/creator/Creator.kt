@@ -23,7 +23,7 @@ import com.practicum.playlistmaker.domain.sharing.impl.SharingInteractorImpl
 object Creator {
 
     fun provideSharingInteractor(context: Context): SharingInteractor {
-        return SharingInteractorImpl(context, getExternalNavigator(context))
+        return SharingInteractorImpl(getExternalNavigator(context))
     }
 
     private fun getExternalNavigator(context: Context): ExternalNavigator {

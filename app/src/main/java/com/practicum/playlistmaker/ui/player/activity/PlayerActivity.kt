@@ -42,7 +42,7 @@ class PlayerActivity : AppCompatActivity() {
             when(viewModel.getPlayerState()) {
                 PlayerState.PREPARED, PlayerState.PAUSED -> viewModel.playTrack()
                 PlayerState.PLAYING -> viewModel.pauseTrack()
-                PlayerState.DEFAULT -> {}
+                PlayerState.DEFAULT -> Unit
             }
         }
 
@@ -181,11 +181,11 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun setButtonState(actionView: View, state: Boolean) {
         when {
-            (actionView == binding.ivAddToPlaylistButton) -> (actionView as ImageView)
-                .setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
+            (actionView == binding.ivAddToPlaylistButton) -> (actionView as? ImageView)
+                ?.setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
 
-            (actionView == binding.ivAddToFavoritesButton) -> (actionView as ImageView)
-                .setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
+            (actionView == binding.ivAddToFavoritesButton) -> (actionView as? ImageView)
+                ?.setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
         }
     }
 

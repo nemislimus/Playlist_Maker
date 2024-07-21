@@ -7,10 +7,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.sharing.api.ExternalNavigator
 import com.practicum.playlistmaker.domain.sharing.models.EmailData
 
 class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
+
+    override fun getStringResourceById(id: Int): String {
+        return context.getString(id)
+    }
 
     override fun shareLink(shareLink: String) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -18,7 +23,7 @@ class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
             putExtra(Intent.EXTRA_TEXT, shareLink)
         }
 
-        val shareChooser = Intent.createChooser(shareIntent, WHERE_SEND_LINK)
+        val shareChooser = Intent.createChooser(shareIntent, context.getString(R.string.where_send_link))
         shareChooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         try {
@@ -26,7 +31,7 @@ class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(
                 context,
-                NO_APPS_FOR_TEXT_SENDING,
+                context.getString(R.string.no_apps_for_text_sending),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -42,7 +47,7 @@ class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(
                 context,
-                NO_APPS_FOR_BROWSE,
+                context.getString(R.string.no_browser_app),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -62,16 +67,9 @@ class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(
                 context,
-                NO_APPS_FOR_EMAIL,
+                context.getString(R.string.no_apps_for_email),
                 Toast.LENGTH_LONG
             ).show()
         }
-    }
-
-    companion object{
-        const val WHERE_SEND_LINK = "Укажите куда отправить ссылку:"
-        const val NO_APPS_FOR_TEXT_SENDING = "На устройстве нет приложений для отправки текста!"
-        const val NO_APPS_FOR_BROWSE = "На устройстве нет браузера!"
-        const val NO_APPS_FOR_EMAIL = "На устройстве нет почтового клиента!"
     }
 }

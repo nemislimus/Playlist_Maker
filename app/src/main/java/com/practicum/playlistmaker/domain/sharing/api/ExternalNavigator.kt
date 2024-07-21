@@ -9,4 +9,6 @@ interface ExternalNavigator {
     fun openLink(termsLink: String)
 
     fun openEmail(email: EmailData)
+
+    fun getStringResourceById(id: Int): String
 }
