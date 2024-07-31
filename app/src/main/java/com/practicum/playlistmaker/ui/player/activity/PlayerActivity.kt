@@ -7,7 +7,6 @@ import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.ui.PlaylistApp
 import com.practicum.playlistmaker.R
@@ -16,6 +15,8 @@ import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
+import org.koin.core.parameter.parametersOf
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
@@ -25,18 +26,15 @@ class PlayerActivity : AppCompatActivity() {
 
     private var timerRunnable: Runnable? = null
     private val playerActivityHandler = Handler(Looper.getMainLooper())
-    private lateinit var viewModel: PlayerViewModel
+
+    private val viewModel: PlayerViewModel by viewModel{
+        parametersOf(intent.getStringExtra(PlaylistApp.TRACK_KEY)?.let { createTrackFromJson(it) }!!)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel
-                .getViewModelFactory( track = intent.getStringExtra(PlaylistApp.TRACK_KEY)?.let { createTrackFromJson(it) }!! )
-        )[PlayerViewModel::class.java]
 
         binding.ivPlayButton.setOnClickListener {
             when(viewModel.getPlayerState()) {

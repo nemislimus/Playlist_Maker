@@ -7,9 +7,10 @@ import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.models.NetworkResponse
 import com.practicum.playlistmaker.data.search.models.TracksSearchRequest
 
-class RetrofitNetworkClient (private val context: Context): NetworkClient {
-
-    private val itunesService = Retrofit.itunesInstance
+class RetrofitNetworkClient (
+    private val context: Context,
+    private val itunesService: ItunesApiService,
+): NetworkClient {
 
     override fun doRequest(requestModel: Any): NetworkResponse {
         if (!isConnected()) {
