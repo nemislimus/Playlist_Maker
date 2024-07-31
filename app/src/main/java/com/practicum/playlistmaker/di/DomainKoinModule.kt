@@ -23,29 +23,29 @@ import org.koin.dsl.module
 val domainModule = module {
 
     // Search block
-    single<TracksInteractor> {
+    factory<TracksInteractor> {
         TracksInteractorImpl(get())
     }
 
-    single<TracksRepository> {
+    factory<TracksRepository> {
         TracksRepositoryImpl(get(), get())
     }
 
     // Player block
-    single<PlayerInteractor> {
+    factory<PlayerInteractor> {
         MediaPlayerInteractorImpl(get())
     }
 
-    single<PlayerRepository> {
+    factory<PlayerRepository> {
         MediaPlayerRepositoryImpl(get())
     }
 
     // Settings-Sharing block
-    single<SettingsInteractor> {
+    factory<SettingsInteractor> {
         SettingsInteractorImpl(get())
     }
 
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         SettingsRepositoryImpl(
             androidContext().getSharedPreferences(
                 SettingsRepository.SETTINGS_STORAGE,
@@ -54,11 +54,11 @@ val domainModule = module {
         )
     }
 
-    single<SharingInteractor> {
+    factory<SharingInteractor> {
         SharingInteractorImpl(get())
     }
 
-    single<ExternalNavigator> {
+    factory<ExternalNavigator> {
         ExternalNavigatorImlp(androidContext())
     }
 }
