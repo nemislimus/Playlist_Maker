@@ -115,7 +115,6 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 manageContentVisibilityOnChanges(s.toString())
                 manageHistoryVisibilityOnChanges(searchBar.hasFocus(), s.toString())
-//                searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
                 searchBarClearButton.isVisible = clearSearchBarButtonVisibility(s)
                 searchBarTextValue = s.toString()
                 viewModel.searchDebounce(s.toString())
