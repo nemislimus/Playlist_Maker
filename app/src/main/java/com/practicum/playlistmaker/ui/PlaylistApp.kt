@@ -5,8 +5,13 @@ import android.content.Context
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
+import com.practicum.playlistmaker.di.dataModule
+import com.practicum.playlistmaker.di.domainModule
+import com.practicum.playlistmaker.di.presentationModule
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.domain.settings.api.SettingsRepository
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class PlaylistApp: Application() {
 
@@ -14,6 +19,12 @@ class PlaylistApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidContext(this@PlaylistApp)
+            modules(dataModule, domainModule, presentationModule)
+        }
+
         val appSharePrefs = getSharedPreferences(SettingsRepository.SETTINGS_STORAGE, MODE_PRIVATE)
         darkThemeValue = appSharePrefs.getBoolean(SettingsRepository.NIGHT_MODE_KEY, false)
         switchTheme(darkThemeValue)

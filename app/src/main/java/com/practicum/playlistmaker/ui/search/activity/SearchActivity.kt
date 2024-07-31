@@ -17,7 +17,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
@@ -29,6 +28,7 @@ import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import com.practicum.playlistmaker.ui.search.TrackAdapter
 import com.practicum.playlistmaker.ui.search.models.TracksState
 import com.practicum.playlistmaker.ui.search.view_model.TracksViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -58,18 +58,13 @@ class SearchActivity : AppCompatActivity() {
     private var isListItemClickAllowed: Boolean = true
     private val searchActivityHandler = Handler(Looper.getMainLooper())
     private var searchBarTextWatcher: TextWatcher? = null
-    private lateinit var viewModel: TracksViewModel
+    private val viewModel: TracksViewModel by viewModel()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this,
-            TracksViewModel.getViewModelFactory()
-        )[TracksViewModel::class.java]
 
         outOfSearchButton = binding.searchOutButton
         searchBar = binding.searchBarEditText
@@ -115,7 +110,6 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 manageContentVisibilityOnChanges(s.toString())
                 manageHistoryVisibilityOnChanges(searchBar.hasFocus(), s.toString())
-//                searchBarClearButton.visibility = clearSearchBarButtonVisibility(s)
                 searchBarClearButton.isVisible = clearSearchBarButtonVisibility(s)
                 searchBarTextValue = s.toString()
                 viewModel.searchDebounce(s.toString())

@@ -1,25 +1,22 @@
 package com.practicum.playlistmaker.ui.search.view_model
 
-import android.app.Application
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
-import com.practicum.playlistmaker.ui.PlaylistApp
 import com.practicum.playlistmaker.ui.search.models.TracksState
 
-class TracksViewModel(application: Application) : AndroidViewModel(application) {
+class TracksViewModel(
+    private val tracksInteractor: TracksInteractor,
+    private val context: Context
+) : ViewModel() {
 
-    private val tracksInteractor = Creator.provideTracksInteractor(getApplication())
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
 
@@ -64,7 +61,7 @@ class TracksViewModel(application: Application) : AndroidViewModel(application) 
                         message != null -> {
                             renderState(
                                 TracksState.Error(
-                                    errorMessage = getApplication<PlaylistApp>().getString(R.string.search_error_no_internet),
+                                    errorMessage = context.getString(R.string.search_error_no_internet),
                                 )
                             )
                         }
@@ -72,7 +69,7 @@ class TracksViewModel(application: Application) : AndroidViewModel(application) 
                         tracks.isEmpty() -> {
                             renderState(
                                 TracksState.Empty(
-                                    emptyMessage = getApplication<PlaylistApp>().getString(R.string.search_error_not_found),
+                                    emptyMessage = context.getString(R.string.search_error_not_found),
                                 )
                             )
                         }
@@ -143,12 +140,6 @@ class TracksViewModel(application: Application) : AndroidViewModel(application) 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 1500L
         private val SEARCH_REQUEST_TOKEN = Any()
-
-        fun getViewModelFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                TracksViewModel(this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application)
-            }
-        }
 
         private val emptyHistory: ArrayList<Track> = arrayListOf()
 

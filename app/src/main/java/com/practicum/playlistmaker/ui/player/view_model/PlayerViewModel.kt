@@ -1,14 +1,10 @@
 package com.practicum.playlistmaker.ui.player.view_model
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.ViewModel
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.dpToPx
@@ -18,13 +14,13 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(
-    application: Application,
-    val currentTrack: Track,
-) : AndroidViewModel(application) {
+    private val playerInteractor: PlayerInteractor,
+    private val currentTrack: Track,
+    private val context: Context,
+) : ViewModel() {
 
     private var playerIsPrepared: Boolean = false
     lateinit var onPrepare: () -> Unit
-    private val playerInteractor = Creator.provideMediaPlayerInteractor()
 
     private var playerStateLiveData =
         MutableLiveData<PlayerState>()
@@ -87,7 +83,7 @@ class PlayerViewModel(
            artistName = track.artistName,
            trackDuration = updateDuration,
            coverLink = track.artworkUrl512,
-           coverCornerRadius = RoundedCorners(dpToPx(8f, getApplication())),
+           coverCornerRadius = RoundedCorners(dpToPx(8f, context)),
            soundPreview = track.previewUrl,
            hasCollection = track.collectionName.isNotEmpty(),
            collectionName = track.collectionName,
@@ -106,16 +102,4 @@ class PlayerViewModel(
         releasePlayer()
     }
 
-    companion object {
-
-        fun getViewModelFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(
-                    application = this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as Application,
-                    currentTrack = track,
-                )
-            }
-        }
-
-    }
 }

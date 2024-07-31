@@ -7,8 +7,9 @@ import com.practicum.playlistmaker.domain.player.models.PlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MediaPlayerRepositoryImpl: PlayerRepository {
-    private val player = MediaPlayer()
+class MediaPlayerRepositoryImpl(
+    private val player: MediaPlayer
+): PlayerRepository {
     private var playerState: PlayerState = PlayerState.DEFAULT
     private lateinit var listener: PlayerRepository.OnStateChangeListener
 
