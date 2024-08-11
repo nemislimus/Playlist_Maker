@@ -15,6 +15,7 @@
     <dimen name="search_bar_text_padding">38dp</dimen>
     <dimen name="search_bar_margin_top">10dp</dimen>
     <dimen name="search_bar_text_margin_top">10dp</dimen>
+    <dimen name="classic_size_2dp">2dp</dimen>
     <dimen name="classic_size_4dp">4dp</dimen>
     <dimen name="classic_size_8dp">8dp</dimen>
     <dimen name="classic_size_10dp">10dp</dimen>
@@ -25,8 +26,12 @@
     <dimen name="classic_size_24dp">24dp</dimen>
     <dimen name="classic_size_26dp">26dp</dimen>
     <dimen name="classic_size_60dp">60dp</dimen>
+    <dimen name="classic_size_106dp">106dp</dimen>
     <dimen name="classic_size_124dp">124dp</dimen>
     <dimen name="classic_size_30dp">30dp</dimen>
     <dimen name="classic_size_40dp">40dp</dimen>
+    <dimen name="classic_size_46dp">46dp</dimen>
     <dimen name="search_list_image_45dp">45dp</dimen>
+    <dimen name="tabHeight_48dp">48dp</dimen>
+    <dimen name="mediateka_placeholder_120dp">120dp</dimen>
 </resources>
