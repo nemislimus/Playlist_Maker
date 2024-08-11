@@ -10,17 +10,17 @@ import org.koin.dsl.module
 
 val presentationModule = module {
 
-    // Search block
+    /////////////////////////////////// Search block
     viewModel {
-        TracksViewModel(get(),androidContext())
+        TracksViewModel(get(), get())
     }
 
-    // Player block
+    /////////////////////////////////// Player block
     viewModel { (track: Track) ->
-        PlayerViewModel(get(), track, androidContext())
+        PlayerViewModel(get(), track, get())
     }
 
-    // Settings-Sharing block
+    /////////////////////////////////// Settings-Sharing block
     viewModel {
         SettingsViewModel(get(), get())
     }

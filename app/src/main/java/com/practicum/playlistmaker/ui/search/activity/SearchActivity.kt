@@ -54,7 +54,7 @@ class SearchActivity : AppCompatActivity() {
     )
 
     // Util variables
-    private var searchBarTextValue: String = ""
+    private var searchBarTextValue: String = EMPTY_TEXT_VALUE
     private var isListItemClickAllowed: Boolean = true
     private val searchActivityHandler = Handler(Looper.getMainLooper())
     private var searchBarTextWatcher: TextWatcher? = null
@@ -88,8 +88,8 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchBarClearButton.setOnClickListener {
-            searchBarTextValue = ""
-            searchBar.setText("")
+            searchBarTextValue = EMPTY_TEXT_VALUE
+            searchBar.setText(EMPTY_TEXT_VALUE)
             hideSearchBarKeyboard()
             viewModel.showHistory()
         }
@@ -224,7 +224,7 @@ class SearchActivity : AppCompatActivity() {
 
         // Go to Player by clicked Track
         val playerIntent = Intent(this, PlayerActivity::class.java).apply {
-            putExtra(PlaylistApp.TRACK_KEY, createJsonFromTrack(track))
+            putExtra(PlaylistApp.TRACK_KEY_FROM_SEARCH_TO_PLAYER, createJsonFromTrack(track))
         }
         startActivity(playerIntent)
     }
@@ -259,5 +259,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val EMPTY_TEXT_VALUE= ""
     }
 }

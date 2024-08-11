@@ -9,9 +9,8 @@ import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.dpToPx
 import com.practicum.playlistmaker.domain.player.models.PlayerState
+import com.practicum.playlistmaker.ui.convertTimeValueFromLongToString
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
@@ -74,8 +73,7 @@ class PlayerViewModel(
 
     private fun getUiState(track: Track = currentTrack): PlayerUiState {
 
-        val updateDuration: String =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        val updateDuration: String = convertTimeValueFromLongToString(track.trackTimeMillis)
 
         return PlayerUiState(
            trackId = track.trackId,

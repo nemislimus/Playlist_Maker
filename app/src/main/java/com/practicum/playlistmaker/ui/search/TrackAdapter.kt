@@ -20,7 +20,7 @@ class TrackAdapter(
         return when(viewType) {
             TYPE_CLEAR_BUTTON -> ClearHistoryButtonViewHolder(ClearHistoryBtnItemBinding.inflate(layoutInflater, parent, false))
             TYPE_TRACK -> TrackViewHolder(TrackListItemBinding.inflate(layoutInflater, parent, false))
-            else -> throw IllegalAccessException("Неизвестный тип элемента")
+            else -> throw IllegalAccessException("Unknown ViewHolder type for create")
         }
     }
 
@@ -35,7 +35,7 @@ class TrackAdapter(
                 holder.bind(tracks[position])
                 holder.clearBtn.setOnClickListener { buttonClickListener.onItemClick(track = tracks[position]) }
             }
-            else -> throw IllegalAccessException("Неизвестный тип элемента для заполнения")
+            else -> throw IllegalAccessException("Unknown ViewHolder type for binding")
         }
     }
 
