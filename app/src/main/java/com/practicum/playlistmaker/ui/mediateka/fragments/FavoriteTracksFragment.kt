@@ -14,7 +14,8 @@ import org.koin.core.parameter.parametersOf
 
 class FavoriteTracksFragment: Fragment() {
 
-    private lateinit var binding: FragmentFavoriteBinding
+    private var _binding: FragmentFavoriteBinding? = null
+    private val binding get() = _binding!!
 
     private val favoriteTracksFragmentViewModel by viewModel<FavoriteTracksFragmentViewModel> {
         parametersOf(requireArguments().getBoolean(NO_DATA))
@@ -25,7 +26,7 @@ class FavoriteTracksFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentFavoriteBinding.inflate(inflater, container, false)
+        _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -35,6 +36,11 @@ class FavoriteTracksFragment: Fragment() {
         favoriteTracksFragmentViewModel.getFavoriteLiveData().observe(viewLifecycleOwner) { noData ->
             binding.favoritesPlaceholderGroup.isVisible = noData
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

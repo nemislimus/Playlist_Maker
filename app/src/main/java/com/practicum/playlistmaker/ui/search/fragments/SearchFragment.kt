@@ -1,13 +1,15 @@
-package com.practicum.playlistmaker.ui.search.activity
+package com.practicum.playlistmaker.ui.search.fragments
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -17,10 +19,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.ui.createJsonFromTrack
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.PlaylistApp
@@ -30,9 +33,10 @@ import com.practicum.playlistmaker.ui.search.models.TracksState
 import com.practicum.playlistmaker.ui.search.view_model.TracksViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
 
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     // Placeholder elements
     private lateinit var placeholderImage: ImageView
@@ -60,11 +64,17 @@ class SearchActivity : AppCompatActivity() {
     private var searchBarTextWatcher: TextWatcher? = null
     private val viewModel: TracksViewModel by viewModel()
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         outOfSearchButton = binding.searchOutButton
         searchBar = binding.searchBarEditText
@@ -84,7 +94,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.searchOutButton.setOnClickListener {
-            finish()
+            parentFragmentManager.popBackStack()
         }
 
         searchBarClearButton.setOnClickListener {
@@ -120,21 +130,23 @@ class SearchActivity : AppCompatActivity() {
 
         // Configure RecyclerView
         trackListRecyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         trackListRecyclerView.adapter = trackAdapter
+
     }
 
     override fun onResume() {
         super.onResume()
 
-        viewModel.observeState().observe(this) {
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         searchBarTextWatcher?.let { searchBar.removeTextChangedListener(it) }
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun render(state: TracksState) {
@@ -192,7 +204,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun hideSearchBarKeyboard() {
         val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(searchBar.windowToken, 0)
     }
 
@@ -223,7 +235,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         // Go to Player by clicked Track
-        val playerIntent = Intent(this, PlayerActivity::class.java).apply {
+        val playerIntent = Intent(requireActivity(), PlayerActivity::class.java).apply {
             putExtra(PlaylistApp.TRACK_KEY_FROM_SEARCH_TO_PLAYER, createJsonFromTrack(track))
         }
         startActivity(playerIntent)
@@ -238,9 +250,9 @@ class SearchActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchBarTextValue = savedInstanceState.getString(EDIT_TEXT_VALUE).toString()
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        searchBarTextValue = savedInstanceState?.getString(EDIT_TEXT_VALUE) ?: EMPTY_TEXT_VALUE
         searchBar.setText(searchBarTextValue)
     }
 
@@ -257,6 +269,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val TAG = "search_tag"
+
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
         private const val EMPTY_TEXT_VALUE= ""

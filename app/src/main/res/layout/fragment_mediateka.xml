@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSecondary"
-    tools:context=".ui.mediateka.activity.MediatekaFragment">
+    tools:context=".ui.mediateka.fragments.MediatekaFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/mediatekaOutButton"

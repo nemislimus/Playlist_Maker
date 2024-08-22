@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.ui.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentStartBinding
-import com.practicum.playlistmaker.ui.mediateka.activity.MediatekaFragment
-import com.practicum.playlistmaker.ui.search.activity.SearchActivity
+import com.practicum.playlistmaker.ui.mediateka.fragments.MediatekaFragment
+import com.practicum.playlistmaker.ui.search.fragments.SearchFragment
 import com.practicum.playlistmaker.ui.settings.fragments.SettingsFragment
 
 class StartFragment : Fragment() {
@@ -32,8 +31,16 @@ class StartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.searchButton.setOnClickListener {
-            val clickOnSearchButton = Intent(requireActivity(), SearchActivity::class.java)
-            startActivity(clickOnSearchButton)
+
+            parentFragmentManager.commit {
+                replace(
+                    R.id.mainContainerView,
+                    SearchFragment(),
+                    SearchFragment.TAG
+                )
+
+                addToBackStack(SearchFragment.TAG)
+            }
         }
 
         binding.mediaButton.setOnClickListener {

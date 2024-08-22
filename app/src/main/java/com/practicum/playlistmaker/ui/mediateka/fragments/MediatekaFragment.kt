@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui.mediateka.activity
+package com.practicum.playlistmaker.ui.mediateka.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentMediatekaBinding
-import com.practicum.playlistmaker.ui.mediateka.fragments.MediatekaFragmentsAdapter
 
 class MediatekaFragment : Fragment() {
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/SearchScreenLayout"
     android:orientation="vertical"
-    tools:context=".ui.search.activity.SearchActivity">
+    tools:context=".ui.search.fragments.SearchFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/searchOutButton"
