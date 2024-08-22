@@ -42,10 +42,6 @@ class PlaylistApp : Application() {
             }
         )
     }
-
-    companion object {
-        const val TRACK_KEY_FROM_SEARCH_TO_PLAYER = "track_key_from_search_to_player"
-    }
 }
 
 fun createJsonFromTrack(track: Track): String {

@@ -28,10 +28,6 @@ class MediatekaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.mediatekaOutButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
-
         binding.mediatekaViewPager.adapter =
             MediatekaFragmentsAdapter(childFragmentManager, lifecycle)
 
@@ -52,9 +48,5 @@ class MediatekaFragment : Fragment() {
         _binding = null
         mediatekaTabMediator.detach()
         super.onDestroyView()
-    }
-
-    companion object {
-        const val TAG = "mediateka_tag"
     }
 }

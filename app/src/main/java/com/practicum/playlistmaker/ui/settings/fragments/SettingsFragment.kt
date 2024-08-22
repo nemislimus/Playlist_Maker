@@ -35,11 +35,6 @@ class SettingsFragment : Fragment() {
             binding.switchTheme.isChecked = (requireActivity().applicationContext as PlaylistApp).darkThemeValue
         }
 
-        // Exit from Settings
-        binding.outOfSettingsButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
-
         // Handle theme switch
         binding.switchTheme.setOnCheckedChangeListener { _, checked ->
             viewModel.updateDarkModeValue(checked)
@@ -71,9 +66,4 @@ class SettingsFragment : Fragment() {
         _binding = null
         super.onDestroyView()
     }
-
-    companion object {
-        const val TAG = "settings_tag"
-    }
-
 }

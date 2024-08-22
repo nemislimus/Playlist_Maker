@@ -6,9 +6,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-import com.practicum.playlistmaker.ui.PlaylistApp
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.ui.createTrackFromJson
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
@@ -28,7 +28,7 @@ class PlayerActivity : AppCompatActivity() {
     private val playerActivityHandler = Handler(Looper.getMainLooper())
 
     private val viewModel: PlayerViewModel by viewModel{
-        parametersOf(intent.getStringExtra(PlaylistApp.TRACK_KEY_FROM_SEARCH_TO_PLAYER)?.let { createTrackFromJson(it) }!!)
+        parametersOf(intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) }!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,6 +196,11 @@ class PlayerActivity : AppCompatActivity() {
 
         private const val IN_PLAYLIST_VALUE = "IN_PLAYLIST_VALUE"
         private const val IN_FAVORITE_VALUE = "IN_FAVORITE_VALUE"
+
+        private const val ARGS_TRACK = "args_movie_id"
+
+        fun createArgs(trackJsonString: String): Bundle =
+            bundleOf(ARGS_TRACK to trackJsonString)
     }
 }
 

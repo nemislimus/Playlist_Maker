@@ -11,7 +11,6 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/mediatekaOutButton"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/ic_arrow_back"
         app:titleTextColor="?attr/colorSecondaryVariant"
         app:title="@string/main_mediateka"
         app:titleTextAppearance="@style/Toolbar"

@@ -1,8 +1,9 @@
-package com.practicum.playlistmaker.ui.main
+package com.practicum.playlistmaker.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.commit
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
 
@@ -14,14 +15,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(savedInstanceState == null) {
-            supportFragmentManager.commit {
-                add(
-                    R.id.mainContainerView,
-                    StartFragment(),
-                    StartFragment.TAG
-                )
-            }
-        }
+        val navController =
+            (supportFragmentManager.findFragmentById(R.id.mainContainerView) as NavHostFragment)
+                .navController
+
+        binding.mainBottomNavigation.setupWithNavController(navController)
+
     }
 }

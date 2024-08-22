@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.ui.search.fragments
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,16 +16,15 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.ui.createJsonFromTrack
 import com.practicum.playlistmaker.domain.search.models.Track
-import com.practicum.playlistmaker.ui.PlaylistApp
 import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import com.practicum.playlistmaker.ui.search.TrackAdapter
 import com.practicum.playlistmaker.ui.search.models.TracksState
@@ -46,7 +44,6 @@ class SearchFragment : Fragment() {
     private lateinit var historyText: TextView
 
     // Others Views
-    private lateinit var outOfSearchButton: Toolbar
     private lateinit var searchBar: EditText
     private lateinit var searchBarClearButton: ImageView
     private lateinit var trackListRecyclerView: RecyclerView
@@ -76,7 +73,6 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        outOfSearchButton = binding.searchOutButton
         searchBar = binding.searchBarEditText
         searchBarClearButton = binding.searchBarClearButton
         trackListRecyclerView = binding.rvTrackList
@@ -91,10 +87,6 @@ class SearchFragment : Fragment() {
 
         placeholderRefreshButton.setOnClickListener {
             viewModel.searchOnRefresh(searchBarTextValue)
-        }
-
-        binding.searchOutButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
         }
 
         searchBarClearButton.setOnClickListener {
@@ -235,10 +227,10 @@ class SearchFragment : Fragment() {
         }
 
         // Go to Player by clicked Track
-        val playerIntent = Intent(requireActivity(), PlayerActivity::class.java).apply {
-            putExtra(PlaylistApp.TRACK_KEY_FROM_SEARCH_TO_PLAYER, createJsonFromTrack(track))
-        }
-        startActivity(playerIntent)
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerActivity,
+            PlayerActivity.createArgs(createJsonFromTrack(track))
+        )
     }
 
     private fun clearHistory() {
@@ -269,8 +261,6 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-        const val TAG = "search_tag"
-
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
         private const val EMPTY_TEXT_VALUE= ""

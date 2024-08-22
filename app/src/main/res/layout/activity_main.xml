@@ -5,15 +5,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".ui.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mainContainerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="?attr/colorSecondary"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/main_nav_graph"
+
+        app:layout_constraintBottom_toTopOf="@id/main_bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/main_bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:itemIconSize="@dimen/classic_size_24dp"
+        android:paddingHorizontal="0dp"
+        app:itemBackground="?attr/colorSecondary"
+        app:menu="@menu/main_menu"
+        app:itemIconTint="@color/main_menu_item_color"
+        app:itemTextColor="@color/main_menu_item_color"
+        app:itemTextAppearanceActive="@style/BottomMenuText"
+        app:itemTextAppearanceInactive="@style/BottomMenuText"
+        app:itemTextAppearanceActiveBoldEnabled="false"
+        app:itemActiveIndicatorStyle="?attr/colorSecondary"
+
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toBottomOf="@id/mainContainerView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

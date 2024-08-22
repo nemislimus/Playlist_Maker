@@ -9,7 +9,6 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/searchOutButton"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/ic_arrow_back"
         app:titleTextColor="?attr/colorSecondaryVariant"
         app:title="@string/main_search"
         app:titleTextAppearance="@style/Toolbar"
