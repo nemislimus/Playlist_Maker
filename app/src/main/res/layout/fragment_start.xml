@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/MainScreenLayout">
+
+    <TextView
+        android:text="@string/main_title"
+        style="@style/LogoTextMain" />
+
+    <Button
+        android:id="@+id/searchButton"
+        style="@style/MainScreenButtons"
+        android:layout_marginTop="40dp"
+        android:text="@string/main_search"
+        app:icon="@drawable/ic_search_24" />
+
+    <Button
+        android:id="@+id/mediaButton"
+        style="@style/MainScreenButtons"
+        android:text="@string/main_mediateka"
+        app:icon="@drawable/ic_mediateka" />
+
+    <Button
+        android:id="@+id/settingsButton"
+        style="@style/MainScreenButtons"
+        android:layout_marginBottom="28dp"
+        android:text="@string/main_settings"
+        app:icon="@drawable/ic_settings" />
+
+</LinearLayout>
