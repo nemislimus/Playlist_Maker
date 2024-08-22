@@ -15,7 +15,7 @@ import org.koin.core.context.startKoin
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlaylistApp: Application() {
+class PlaylistApp : Application() {
 
     var darkThemeValue = false
 
@@ -60,9 +60,10 @@ fun dpToPx(dp: Float, context: Context): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
-        context.resources.displayMetrics).toInt()
+        context.resources.displayMetrics
+    ).toInt()
 }
 
 fun convertTimeValueFromLongToString(timeValueLong: Long): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(timeValueLong)
+    return SimpleDateFormat("mm:ss", Locale.getDefault()).format(timeValueLong)
 }

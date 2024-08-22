@@ -24,7 +24,9 @@
         android:id="@+id/mediatekaTabLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/tabHeight_48dp"
+        app:tabMaxWidth="0dp"
         android:backgroundTint="?attr/colorSecondary"
+        android:orientation="horizontal"
         app:tabMode="fixed"
         app:tabGravity="fill"
         app:tabTextColor="?attr/colorSecondaryVariant"
@@ -40,8 +42,8 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/mediatekaViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:orientation="horizontal"
         app:layout_constrainedHeight="true"
         android:layout_marginHorizontal="@dimen/classic_size_16dp"
