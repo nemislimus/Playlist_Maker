@@ -28,7 +28,7 @@ class PlayerActivity : AppCompatActivity() {
     private val playerActivityHandler = Handler(Looper.getMainLooper())
 
     private val viewModel: PlayerViewModel by viewModel{
-        parametersOf(intent.getStringExtra(PlaylistApp.TRACK_KEY)?.let { createTrackFromJson(it) }!!)
+        parametersOf(intent.getStringExtra(PlaylistApp.TRACK_KEY_FROM_SEARCH_TO_PLAYER)?.let { createTrackFromJson(it) }!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,15 +113,17 @@ class PlayerActivity : AppCompatActivity() {
             .transform(stateUi.coverCornerRadius)
             .into(binding.ivAlbumCover)
 
-        binding.albumInfoGroup.isVisible = stateUi.hasCollection
-        if (stateUi.hasCollection) binding.tvTrackAlbumValue.text = stateUi.collectionName
-        binding.tvTrackNamePlayer.text = stateUi.trackName
-        binding.tvArtistNamePlayer.text = stateUi.artistName
-        binding.tvTrackDurationValue.text = stateUi.trackDuration
-        binding.tvTrackTimer.text = ZERO_TIMER
-        binding.tvTrackReleaseDateValue.text = stateUi.releaseDate
-        binding.tvTrackGenreValue.text = stateUi.genreName
-        binding.tvTrackCountryValue.text = stateUi.country
+        with(binding) {
+            albumInfoGroup.isVisible = stateUi.hasCollection
+            if (stateUi.hasCollection) tvTrackAlbumValue.text = stateUi.collectionName
+            tvTrackNamePlayer.text = stateUi.trackName
+            tvArtistNamePlayer.text = stateUi.artistName
+            tvTrackDurationValue.text = stateUi.trackDuration
+            tvTrackTimer.text = ZERO_TIMER
+            tvTrackReleaseDateValue.text = stateUi.releaseDate
+            tvTrackGenreValue.text = stateUi.genreName
+            tvTrackCountryValue.text = stateUi.country
+        }
     }
 
     private fun updatePlayButtonAlpha() {

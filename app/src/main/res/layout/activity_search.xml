@@ -8,11 +8,11 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/searchOutButton"
-        style="@style/SearchToolbar"
+        style="@style/Toolbar"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:titleTextColor="?attr/colorSecondaryVariant"
         app:title="@string/main_search"
-        app:titleTextAppearance="@style/SearchToolbar"
+        app:titleTextAppearance="@style/Toolbar"
         android:layout_marginBottom="@dimen/classic_size_8dp"/>
 
     <FrameLayout

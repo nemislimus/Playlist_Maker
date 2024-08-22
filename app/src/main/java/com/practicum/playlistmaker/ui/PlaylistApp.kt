@@ -12,6 +12,8 @@ import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.domain.settings.api.SettingsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlaylistApp: Application() {
 
@@ -42,7 +44,7 @@ class PlaylistApp: Application() {
     }
 
     companion object {
-        const val TRACK_KEY = "track_key"
+        const val TRACK_KEY_FROM_SEARCH_TO_PLAYER = "track_key_from_search_to_player"
     }
 }
 
@@ -59,4 +61,8 @@ fun dpToPx(dp: Float, context: Context): Int {
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
         context.resources.displayMetrics).toInt()
+}
+
+fun convertTimeValueFromLongToString(timeValueLong: Long): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(timeValueLong)
 }

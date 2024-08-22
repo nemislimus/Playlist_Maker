@@ -14,9 +14,11 @@ class TrackViewHolder(private val binding: TrackListItemBinding) : BaseTrackView
     override fun bind(model: Track) {
         val cornerRadiusInPx = dpToPx(2f, itemView.context)
 
-        binding.tvTrackName.text = model.trackName
-        binding.tvTrackArtistName.text = model.artistName
-        binding.tvTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+        with(binding) {
+            tvTrackName.text = model.trackName
+            tvTrackArtistName.text = model.artistName
+            tvTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+        }
 
         Glide.with(itemView)
             .load(model.artworkUrl100)

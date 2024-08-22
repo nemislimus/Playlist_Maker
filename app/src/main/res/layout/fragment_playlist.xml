@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null">
+
+    <Button
+        app:layout_constraintTag="playlists_ph_button"
+        android:id="@+id/createNewPlaylistButton"
+        style="@style/MediatekaPlaceholderButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingTop="@dimen/classic_size_10dp"
+        android:paddingBottom="@dimen/classic_size_10dp"
+        android:paddingStart="@dimen/classic_size_14dp"
+        android:paddingEnd="@dimen/classic_size_14dp"
+        android:textSize="@dimen/classic_text_size_14"
+        android:fontFamily="@font/ys_display_medium"
+        android:textFontWeight="500"
+        android:textAllCaps="false"
+        android:text="@string/create_new_playlist_button"
+        app:cornerRadius="54dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:letterSpacing="0"
+        android:visibility="visible"
+        android:stateListAnimator="@null"
+        android:elevation="0dp"
+        android:layout_marginTop="@dimen/classic_size_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        app:layout_constraintTag="playlists_ph_image"
+        android:id="@+id/playlistPlaceholderImage"
+        android:layout_width="@dimen/mediateka_placeholder_120dp"
+        android:layout_height="@dimen/mediateka_placeholder_120dp"
+        android:layout_marginTop="@dimen/classic_size_46dp"
+        android:src="@drawable/not_found"
+        app:layout_constraintTop_toBottomOf="@id/createNewPlaylistButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        app:layout_constraintTag="playlists_ph_text"
+        style="@style/SearchPlaceholderText"
+        android:id="@+id/tvMediatekaNoPlaylistText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/classic_size_16dp"
+        android:layout_marginBottom="@dimen/classic_size_24dp"
+        android:textSize="@dimen/classic_text_size_22"
+        android:fontFamily="@font/ys_display_medium"
+        android:textFontWeight="500"
+        android:text="@string/no_playlist"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/playlistPlaceholderImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/playlistsPlaceholderGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_tags="playlists_ph_button,
+        playlists_ph_image, playlists_ph_text"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

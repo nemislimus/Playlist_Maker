@@ -22,7 +22,7 @@ import org.koin.dsl.module
 
 val domainModule = module {
 
-    // Search block
+    /////////////////////////////////// Search block
     factory<TracksInteractor> {
         TracksInteractorImpl(get())
     }
@@ -31,7 +31,7 @@ val domainModule = module {
         TracksRepositoryImpl(get(), get())
     }
 
-    // Player block
+    /////////////////////////////////// Player block
     factory<PlayerInteractor> {
         MediaPlayerInteractorImpl(get())
     }
@@ -40,7 +40,7 @@ val domainModule = module {
         MediaPlayerRepositoryImpl(get())
     }
 
-    // Settings-Sharing block
+    /////////////////////////////////// Settings-Sharing block
     factory<SettingsInteractor> {
         SettingsInteractorImpl(get())
     }
@@ -59,6 +59,6 @@ val domainModule = module {
     }
 
     factory<ExternalNavigator> {
-        ExternalNavigatorImlp(androidContext())
+        ExternalNavigatorImlp(get())
     }
 }

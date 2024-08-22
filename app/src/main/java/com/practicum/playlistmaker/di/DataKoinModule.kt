@@ -13,9 +13,9 @@ import org.koin.dsl.module
 
 val dataModule = module {
 
-    // Search block
+    /////////////////////////////////// Search block
     single<NetworkClient> {
-        RetrofitNetworkClient(androidContext(), Retrofit.itunesInstance)
+        RetrofitNetworkClient(get(), Retrofit.itunesInstance)
     }
 
     single<TracksStorage> {
@@ -32,7 +32,7 @@ val dataModule = module {
         Gson()
     }
 
-    // Player block
+    /////////////////////////////////// Player block
     factory {
         MediaPlayer()
     }
