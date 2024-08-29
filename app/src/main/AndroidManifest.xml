@@ -16,27 +16,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="33">
+
         <activity
             android:name=".ui.player.activity.PlayerActivity"
             android:exported="false" />
+
         <activity
-            android:name=".ui.search.activity.SearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.mediateka.activity.MediatekaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.settings.activity.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:exported="true">
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

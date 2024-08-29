@@ -8,7 +8,7 @@ class PlaylistsFragmentViewModel(
     private val noRealData: Boolean,
 ): ViewModel() {
 
-    private var playlistsLiveData = MutableLiveData(noRealData)
+    private val playlistsLiveData = MutableLiveData(noRealData)
     fun getPlaylistsLiveData(): LiveData<Boolean> = playlistsLiveData
 
 }

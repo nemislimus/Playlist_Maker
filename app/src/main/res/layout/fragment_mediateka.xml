@@ -6,12 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSecondary"
-    tools:context=".ui.mediateka.activity.MediatekaActivity">
+    tools:context=".ui.mediateka.fragments.MediatekaFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/mediatekaOutButton"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/ic_arrow_back"
         app:titleTextColor="?attr/colorSecondaryVariant"
         app:title="@string/main_mediateka"
         app:titleTextAppearance="@style/Toolbar"
@@ -24,7 +23,9 @@
         android:id="@+id/mediatekaTabLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/tabHeight_48dp"
+        app:tabMaxWidth="0dp"
         android:backgroundTint="?attr/colorSecondary"
+        android:orientation="horizontal"
         app:tabMode="fixed"
         app:tabGravity="fill"
         app:tabTextColor="?attr/colorSecondaryVariant"
@@ -40,8 +41,8 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/mediatekaViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:orientation="horizontal"
         app:layout_constrainedHeight="true"
         android:layout_marginHorizontal="@dimen/classic_size_16dp"

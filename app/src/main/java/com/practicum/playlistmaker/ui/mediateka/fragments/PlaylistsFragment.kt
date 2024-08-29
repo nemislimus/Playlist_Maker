@@ -14,7 +14,8 @@ import org.koin.core.parameter.parametersOf
 
 class PlaylistsFragment: Fragment() {
 
-    private lateinit var binding: FragmentPlaylistBinding
+    private var _binding: FragmentPlaylistBinding? = null
+    private val binding get() = _binding!!
 
     private val playlistsFragmentViewModel by viewModel<PlaylistsFragmentViewModel> {
         parametersOf(requireArguments().getBoolean(NO_DATA))
@@ -25,7 +26,7 @@ class PlaylistsFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentPlaylistBinding.inflate(inflater, container, false)
+        _binding = FragmentPlaylistBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -35,6 +36,11 @@ class PlaylistsFragment: Fragment() {
         playlistsFragmentViewModel.getPlaylistsLiveData().observe(viewLifecycleOwner) { noData ->
             binding.playlistsPlaceholderGroup.isVisible = noData
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

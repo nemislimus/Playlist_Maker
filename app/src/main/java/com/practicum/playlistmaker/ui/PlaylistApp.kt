@@ -15,7 +15,7 @@ import org.koin.core.context.startKoin
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlaylistApp: Application() {
+class PlaylistApp : Application() {
 
     var darkThemeValue = false
 
@@ -42,10 +42,6 @@ class PlaylistApp: Application() {
             }
         )
     }
-
-    companion object {
-        const val TRACK_KEY_FROM_SEARCH_TO_PLAYER = "track_key_from_search_to_player"
-    }
 }
 
 fun createJsonFromTrack(track: Track): String {
@@ -60,9 +56,10 @@ fun dpToPx(dp: Float, context: Context): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
-        context.resources.displayMetrics).toInt()
+        context.resources.displayMetrics
+    ).toInt()
 }
 
 fun convertTimeValueFromLongToString(timeValueLong: Long): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(timeValueLong)
+    return SimpleDateFormat("mm:ss", Locale.getDefault()).format(timeValueLong)
 }

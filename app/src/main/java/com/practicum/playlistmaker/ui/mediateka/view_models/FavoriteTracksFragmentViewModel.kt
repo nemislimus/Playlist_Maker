@@ -9,7 +9,7 @@ class FavoriteTracksFragmentViewModel(
     private val noRealData: Boolean,
 ): ViewModel() {
 
-    private var favoriteLiveData = MutableLiveData(noRealData)
+    private val favoriteLiveData = MutableLiveData(noRealData)
     fun getFavoriteLiveData(): LiveData<Boolean> = favoriteLiveData
 
 }
