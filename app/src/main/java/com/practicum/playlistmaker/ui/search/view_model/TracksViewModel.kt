@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.ui.search.view_model
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +12,7 @@ import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.search.models.TracksState
 import com.practicum.playlistmaker.util.jobWithDebounce
+import kotlinx.coroutines.launch
 
 class TracksViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -42,44 +42,47 @@ class TracksViewModel(
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-
             renderState(TracksState.Loading)
 
-            tracksInteractor.searchTracks(newSearchText, object : TracksInteractor.TracksConsumer {
-                override fun consume(foundTracks: List<Track>?, message: String?) {
-
-                    val tracks = mutableListOf<Track>()
-                    if (foundTracks != null) {
-                        tracks.addAll(foundTracks)
+            viewModelScope.launch {
+                tracksInteractor.searchTracks(newSearchText)
+                    .collect { resultData ->
+                        consumeSearchResult(resultData.first, resultData.second)
                     }
+            }
+        }
+    }
 
-                    when {
-                        message != null -> {
-                            renderState(
-                                TracksState.Error(
-                                    errorMessage = context.getString(R.string.search_error_no_internet),
-                                )
-                            )
-                        }
+    private fun consumeSearchResult(foundTracks: List<Track>?, message: String?) {
+        val tracks = mutableListOf<Track>()
+        if (foundTracks != null) {
+            tracks.addAll(foundTracks)
+        }
 
-                        tracks.isEmpty() -> {
-                            renderState(
-                                TracksState.Empty(
-                                    emptyMessage = context.getString(R.string.search_error_not_found),
-                                )
-                            )
-                        }
+        when {
+            message != null -> {
+                renderState(
+                    TracksState.Error(
+                        errorMessage = context.getString(R.string.search_error_no_internet),
+                    )
+                )
+            }
 
-                        else -> {
-                            renderState(
-                                TracksState.Content(
-                                    tracks = tracks,
-                                )
-                            )
-                        }
-                    }
-                }
-            })
+            tracks.isEmpty() -> {
+                renderState(
+                    TracksState.Empty(
+                        emptyMessage = context.getString(R.string.search_error_not_found),
+                    )
+                )
+            }
+
+            else -> {
+                renderState(
+                    TracksState.Content(
+                        tracks = tracks,
+                    )
+                )
+            }
         }
     }
 
