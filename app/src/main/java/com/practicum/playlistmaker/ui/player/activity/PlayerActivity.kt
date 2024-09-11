@@ -28,7 +28,7 @@ class PlayerActivity : AppCompatActivity() {
     private val playerActivityHandler = Handler(Looper.getMainLooper())
 
     private val viewModel: PlayerViewModel by viewModel{
-        parametersOf(intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) }!!)
+        parametersOf(intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
