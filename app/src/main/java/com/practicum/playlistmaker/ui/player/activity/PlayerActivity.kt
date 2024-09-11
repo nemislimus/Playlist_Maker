@@ -2,12 +2,11 @@ package com.practicum.playlistmaker.ui.player.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.ui.createTrackFromJson
@@ -15,6 +14,9 @@ import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -24,8 +26,7 @@ class PlayerActivity : AppCompatActivity() {
     private var trackInPlaylist: Boolean = false
     private var trackInFavorites: Boolean = false
 
-    private var timerRunnable: Runnable? = null
-    private val playerActivityHandler = Handler(Looper.getMainLooper())
+    private var timerJob: Job? = null
 
     private val viewModel: PlayerViewModel by viewModel{
         parametersOf(intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) })
@@ -71,19 +72,15 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.setPlayButtonAsPrepared { updatePlayButtonAlpha() }
-        viewModel.preparePlayer()
+        with(viewModel) {
+            setPlayButtonAsPrepared { updatePlayButtonAlpha() }
+            preparePlayer()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.pauseTrack()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        playerActivityHandler.removeCallbacksAndMessages(null)
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -159,23 +156,22 @@ class PlayerActivity : AppCompatActivity() {
     private fun manageTimerByPlayerState(state: PlayerState) {
         when (state) {
             PlayerState.DEFAULT, PlayerState.PREPARED -> {
-                playerActivityHandler.removeCallbacksAndMessages(null)
+                timerJob?.cancel()
                 binding.tvTrackTimer.text = ZERO_TIMER
             }
 
-            PlayerState.PLAYING -> {
-                val runnable = object : Runnable {
-                    override fun run() {
-                        binding.tvTrackTimer.text = viewModel.getCurrentTimerPosition()
-                        playerActivityHandler.postDelayed(this, TIMER_DELAY)
-                    }
-                }
+            PlayerState.PLAYING -> startTimer()
 
-                playerActivityHandler.postDelayed(runnable, TIMER_DELAY)
-                timerRunnable = runnable
+            PlayerState.PAUSED -> timerJob?.cancel()
+        }
+    }
+
+    private fun startTimer() {
+        timerJob = lifecycleScope.launch {
+            while (viewModel.getPlayerState() == PlayerState.PLAYING) {
+                delay(TIMER_DELAY)
+                binding.tvTrackTimer.text = viewModel.getCurrentTimerPosition()
             }
-
-            PlayerState.PAUSED -> timerRunnable?.let { playerActivityHandler.removeCallbacksAndMessages(timerRunnable) }
         }
     }
 
@@ -192,7 +188,7 @@ class PlayerActivity : AppCompatActivity() {
     companion object {
         private const val ZERO_TIMER = "00:00"
         private const val VALUE_TIMER = "timer_value"
-        private const val TIMER_DELAY = 400L
+        private const val TIMER_DELAY = 300L
 
         private const val IN_PLAYLIST_VALUE = "IN_PLAYLIST_VALUE"
         private const val IN_FAVORITE_VALUE = "IN_FAVORITE_VALUE"

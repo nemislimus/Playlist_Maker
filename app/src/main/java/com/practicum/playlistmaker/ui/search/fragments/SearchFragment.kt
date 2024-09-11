@@ -2,8 +2,6 @@ package com.practicum.playlistmaker.ui.search.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -18,6 +16,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +28,8 @@ import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import com.practicum.playlistmaker.ui.search.TrackAdapter
 import com.practicum.playlistmaker.ui.search.models.TracksState
 import com.practicum.playlistmaker.ui.search.view_model.TracksViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -57,7 +58,6 @@ class SearchFragment : Fragment() {
     // Util variables
     private var searchBarTextValue: String = EMPTY_TEXT_VALUE
     private var isListItemClickAllowed: Boolean = true
-    private val searchActivityHandler = Handler(Looper.getMainLooper())
     private var searchBarTextWatcher: TextWatcher? = null
     private val viewModel: TracksViewModel by viewModel()
 
@@ -218,7 +218,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun manageListItemClick(track: Track) {
-
         viewModel.putTrackToHistory(track)
 
         if (historyText.isVisible) {
@@ -252,16 +251,16 @@ class SearchFragment : Fragment() {
         val current = isListItemClickAllowed
         if (isListItemClickAllowed) {
             isListItemClickAllowed = false
-            searchActivityHandler.postDelayed(
-                { isListItemClickAllowed = true },
-                CLICK_DEBOUNCE_DELAY
-            )
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isListItemClickAllowed = true
+            }
         }
         return current
     }
 
     companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 1500L
         private const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
         private const val EMPTY_TEXT_VALUE= ""
     }

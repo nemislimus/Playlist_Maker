@@ -42,6 +42,7 @@ class MediaPlayerRepositoryImpl(
 
     override fun releasePlayer() {
         playerState = PlayerState.DEFAULT
+        player.stop()
         player.release()
     }
 

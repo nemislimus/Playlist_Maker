@@ -7,10 +7,12 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.search.models.TracksState
+import com.practicum.playlistmaker.util.jobWithDebounce
 
 class TracksViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -20,28 +22,22 @@ class TracksViewModel(
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
 
+    private val tracksSearchDebounce = jobWithDebounce<String>(
+        SEARCH_DEBOUNCE_DELAY,
+        viewModelScope,
+        true
+    ) { newText -> searchRequest(newText) }
+
     private var tracksStateLiveData =
         MutableLiveData<TracksState>(TracksState.History(getHistory()))
 
     fun observeState(): LiveData<TracksState> = tracksStateLiveData
 
     fun searchDebounce(changedText: String) {
-        if (latestSearchText == changedText) {
-            return
+        if (latestSearchText != changedText) {
+            latestSearchText = changedText
+            tracksSearchDebounce(changedText)
         }
-
-        this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
     }
 
     private fun searchRequest(newSearchText: String) {
@@ -138,7 +134,7 @@ class TracksViewModel(
 
 
     companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 1500L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
         private val emptyHistory: ArrayList<Track> = arrayListOf()
