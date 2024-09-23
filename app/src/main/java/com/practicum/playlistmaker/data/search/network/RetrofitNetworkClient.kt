@@ -6,13 +6,15 @@ import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.models.NetworkResponse
 import com.practicum.playlistmaker.data.search.models.TracksSearchRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class RetrofitNetworkClient (
     private val context: Context,
     private val itunesService: ItunesApiService,
 ): NetworkClient {
 
-    override fun doRequest(requestModel: Any): NetworkResponse {
+    override suspend fun doRequest(requestModel: Any): NetworkResponse {
         if (!isConnected()) {
             return NetworkResponse().apply { resultCode = NetworkClient.NO_CONNECTION_CODE }
         }
@@ -20,10 +22,15 @@ class RetrofitNetworkClient (
             return NetworkResponse().apply { resultCode = NetworkClient.BAD_REQUEST_CODE }
         }
 
-        val response = itunesService.getTracksOnSearch(requestModel.expression).execute()
-        val body = response.body()
-        return body?.apply { resultCode = response.code() }
-            ?: NetworkResponse().apply { resultCode = response.code() }
+        return withContext(Dispatchers.IO) {
+            try {
+                val trackResponse = itunesService.getTracksOnSearch(requestModel.expression)
+                trackResponse.apply { resultCode = NetworkClient.SUCCESS_CODE }
+
+            } catch (e: Throwable) {
+                NetworkResponse().apply { resultCode = NetworkClient.INTERNAL_SERVER_ERROR_CODE }
+            }
+        }
     }
 
     private fun isConnected(): Boolean {

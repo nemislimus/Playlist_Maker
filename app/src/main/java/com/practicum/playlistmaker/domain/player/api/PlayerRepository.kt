@@ -6,7 +6,6 @@ import com.practicum.playlistmaker.domain.search.models.Track
 interface PlayerRepository {
 
     fun preparePlayer(listener: OnStateChangeListener)
-
     fun startPlayer()
     fun pausePlayer()
     fun releasePlayer()

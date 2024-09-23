@@ -3,14 +3,16 @@ package com.practicum.playlistmaker.ui.search.view_model
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.search.models.TracksState
+import com.practicum.playlistmaker.util.jobWithDebounce
+import kotlinx.coroutines.launch
 
 class TracksViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -20,70 +22,67 @@ class TracksViewModel(
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
 
+    private val tracksSearchDebounce = jobWithDebounce<String>(
+        SEARCH_DEBOUNCE_DELAY,
+        viewModelScope,
+        true
+    ) { newText -> searchRequest(newText) }
+
     private var tracksStateLiveData =
         MutableLiveData<TracksState>(TracksState.History(getHistory()))
 
     fun observeState(): LiveData<TracksState> = tracksStateLiveData
 
     fun searchDebounce(changedText: String) {
-        if (latestSearchText == changedText) {
-            return
+        if (latestSearchText != changedText) {
+            latestSearchText = changedText
+            tracksSearchDebounce(changedText)
         }
-
-        this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
     }
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-
             renderState(TracksState.Loading)
 
-            tracksInteractor.searchTracks(newSearchText, object : TracksInteractor.TracksConsumer {
-                override fun consume(foundTracks: List<Track>?, message: String?) {
-
-                    val tracks = mutableListOf<Track>()
-                    if (foundTracks != null) {
-                        tracks.addAll(foundTracks)
+            viewModelScope.launch {
+                tracksInteractor.searchTracks(newSearchText)
+                    .collect { resultData ->
+                        consumeSearchResult(resultData.first, resultData.second)
                     }
+            }
+        }
+    }
 
-                    when {
-                        message != null -> {
-                            renderState(
-                                TracksState.Error(
-                                    errorMessage = context.getString(R.string.search_error_no_internet),
-                                )
-                            )
-                        }
+    private fun consumeSearchResult(foundTracks: List<Track>?, message: String?) {
+        val tracks = mutableListOf<Track>()
+        if (foundTracks != null) {
+            tracks.addAll(foundTracks)
+        }
 
-                        tracks.isEmpty() -> {
-                            renderState(
-                                TracksState.Empty(
-                                    emptyMessage = context.getString(R.string.search_error_not_found),
-                                )
-                            )
-                        }
+        when {
+            message != null -> {
+                renderState(
+                    TracksState.Error(
+                        errorMessage = context.getString(R.string.search_error_no_internet),
+                    )
+                )
+            }
 
-                        else -> {
-                            renderState(
-                                TracksState.Content(
-                                    tracks = tracks,
-                                )
-                            )
-                        }
-                    }
-                }
-            })
+            tracks.isEmpty() -> {
+                renderState(
+                    TracksState.Empty(
+                        emptyMessage = context.getString(R.string.search_error_not_found),
+                    )
+                )
+            }
+
+            else -> {
+                renderState(
+                    TracksState.Content(
+                        tracks = tracks,
+                    )
+                )
+            }
         }
     }
 
@@ -138,7 +137,7 @@ class TracksViewModel(
 
 
     companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 1500L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
         private val emptyHistory: ArrayList<Track> = arrayListOf()
