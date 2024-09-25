@@ -19,15 +19,15 @@ class TracksInteractorImpl(private val repository: TracksRepository): TracksInte
     }
 
 
-    override fun getTrackListHistory(): ArrayList<Track>? {
+    override suspend fun getTrackListHistory(): ArrayList<Track>? {
         return repository.getHistory()
     }
 
-    override fun cleanTrackListHistory() {
+    override suspend fun cleanTrackListHistory() {
         repository.cleanHistory()
     }
 
-    override fun putTrackToHistoryList(track: Track) {
+    override suspend fun putTrackToHistoryList(track: Track) {
         var restoreList = getTrackListHistory()
         if (restoreList != null) {
             val indexOfTwin = restoreList.indexOfFirst { track.trackId == it.trackId }

@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.ui.search.view_model
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +10,8 @@ import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.search.models.TracksState
 import com.practicum.playlistmaker.util.jobWithDebounce
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class TracksViewModel(
@@ -19,7 +19,7 @@ class TracksViewModel(
     private val context: Context
 ) : ViewModel() {
 
-    private val handler = Handler(Looper.getMainLooper())
+    private var historyTrackList: ArrayList<Track> = arrayListOf()
     private var latestSearchText: String? = null
 
     private val tracksSearchDebounce = jobWithDebounce<String>(
@@ -29,9 +29,13 @@ class TracksViewModel(
     ) { newText -> searchRequest(newText) }
 
     private var tracksStateLiveData =
-        MutableLiveData<TracksState>(TracksState.History(getHistory()))
+        MutableLiveData<TracksState>()
 
     fun observeState(): LiveData<TracksState> = tracksStateLiveData
+
+    init {
+        showHistory()
+    }
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText != changedText) {
@@ -42,7 +46,7 @@ class TracksViewModel(
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            renderState(TracksState.Loading)
+            updateState(TracksState.Loading)
 
             viewModelScope.launch {
                 tracksInteractor.searchTracks(newSearchText)
@@ -61,7 +65,7 @@ class TracksViewModel(
 
         when {
             message != null -> {
-                renderState(
+                updateState(
                     TracksState.Error(
                         errorMessage = context.getString(R.string.search_error_no_internet),
                     )
@@ -69,7 +73,7 @@ class TracksViewModel(
             }
 
             tracks.isEmpty() -> {
-                renderState(
+                updateState(
                     TracksState.Empty(
                         emptyMessage = context.getString(R.string.search_error_not_found),
                     )
@@ -77,7 +81,7 @@ class TracksViewModel(
             }
 
             else -> {
-                renderState(
+                updateState(
                     TracksState.Content(
                         tracks = tracks,
                     )
@@ -86,12 +90,12 @@ class TracksViewModel(
         }
     }
 
-    private fun renderState(state: TracksState) {
+    private fun updateState(state: TracksState) {
         tracksStateLiveData.postValue(state)
     }
 
-    private fun getHistory(): ArrayList<Track> {
-        return updateHistory(tracksInteractor.getTrackListHistory())
+    private suspend fun getHistory(): ArrayList<Track> {
+           return updateHistory(tracksInteractor.getTrackListHistory())
     }
 
     private fun updateHistory(historyList: ArrayList<Track>?): ArrayList<Track> {
@@ -103,42 +107,50 @@ class TracksViewModel(
         return updateList
     }
 
-    fun showHistory(state: TracksState = TracksState.History(getHistory())) {
-        renderState(state)
+    fun showHistory() {
+        viewModelScope.launch {
+            val history = async(Dispatchers.IO) {
+                getHistory()
+            }
+            historyTrackList = history.await()
+            updateState(TracksState.History(historyTrackList))
+        }
     }
 
     fun hideHistory(state: TracksState = TracksState.History(emptyHistory)) {
-        renderState(state)
+        updateState(state)
     }
 
     fun putTrackToHistory(track: Track) {
-        if (tracksStateLiveData.value is TracksState.History) {
-            tracksInteractor.putTrackToHistoryList(track)
-            showHistory()
-        } else if (tracksStateLiveData.value is TracksState.Content) {
-            tracksInteractor.putTrackToHistoryList(track)
+        viewModelScope.launch(Dispatchers.IO) {
+            if (tracksStateLiveData.value is TracksState.History) {
+                val trackToHistory = launch {
+                    tracksInteractor.putTrackToHistoryList(track)
+                }
+                trackToHistory.join()
+                showHistory()
+            } else if (tracksStateLiveData.value is TracksState.Content) {
+                tracksInteractor.putTrackToHistoryList(track)
+            }
         }
     }
 
     fun eraseHistory() {
-        tracksInteractor.cleanTrackListHistory()
-        showHistory()
+        viewModelScope.launch(Dispatchers.IO) {
+            val erase = launch {
+                tracksInteractor.cleanTrackListHistory()
+            }
+            erase.join()
+            showHistory()
+        }
     }
 
     fun searchOnRefresh(repeatText: String) {
         searchRequest(repeatText)
     }
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        super.onCleared()
-
-    }
-
-
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
 
         private val emptyHistory: ArrayList<Track> = arrayListOf()
 

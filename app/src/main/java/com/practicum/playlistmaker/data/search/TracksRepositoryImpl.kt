@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.data.search
 
+import com.practicum.playlistmaker.data.db.dao.FavoriteTrackDao
 import com.practicum.playlistmaker.data.search.models.TrackDto
 import com.practicum.playlistmaker.data.search.models.TracksSearchResponse
 import com.practicum.playlistmaker.data.search.models.TracksSearchRequest
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.flow
 class TracksRepositoryImpl(
     private val networkClient: NetworkClient,
     private val tracksStorage: TracksStorage,
+    private val favriteDao: FavoriteTrackDao,
 ): TracksRepository {
 
     override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
@@ -23,9 +25,10 @@ class TracksRepositoryImpl(
             }
 
             NetworkClient.SUCCESS_CODE -> {
-                val data = (response as TracksSearchResponse).results.map {
-                    TrackDto.convertToTrack(it)
-                }
+                val data = (response as TracksSearchResponse).results.map { trackDto ->
+                    TrackDto.convertToTrack(trackDto)
+                }.let { data -> updateFavoriteStatus(data) }
+
                 emit(Resource.Success(data))
             }
 
@@ -35,17 +38,25 @@ class TracksRepositoryImpl(
         }
     }
 
-    override fun saveHistory(historyList: List<Track>) {
+    override suspend fun saveHistory(historyList: List<Track>) {
         val trackHistoryList = historyList.map { TrackDto.trackToTrackDto(it) }
         tracksStorage.saveHistory(trackHistoryList)
     }
 
-    override fun getHistory(): ArrayList<Track>? {
-        return tracksStorage.getHistory()?.map { TrackDto.convertToTrack(it) } as ArrayList<Track>?
+    override suspend fun getHistory(): ArrayList<Track>? {
+        val historyTracks = tracksStorage.getHistory()?.map { TrackDto.convertToTrack(it) }
+        return historyTracks?.let { tracks -> updateFavoriteStatus(tracks) } as? ArrayList<Track>?
     }
 
-    override fun cleanHistory() {
+    override suspend fun cleanHistory() {
         tracksStorage.cleanHistory()
+    }
+
+    private suspend fun updateFavoriteStatus(tracks: List<Track>): List<Track> {
+        val favoritesId = favriteDao.getAllFavoriteId().toSet()
+        return tracks.map { track ->
+            track.copy(isFavorite = favoritesId.contains(track.trackId))
+        }
     }
 
 }
