@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoriteBinding
 import com.practicum.playlistmaker.domain.search.models.Track
+import com.practicum.playlistmaker.ui.createJsonFromTrack
 import com.practicum.playlistmaker.ui.mediateka.FavoriteTracksAdapter
 import com.practicum.playlistmaker.ui.mediateka.view_models.FavoriteTracksFragmentViewModel
+import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,8 +26,8 @@ class FavoriteTracksFragment: Fragment() {
     private val binding get() = _binding!!
     private var isListItemClickAllowed: Boolean = true
 
-    private val favoriteTracksAdapter: FavoriteTracksAdapter = FavoriteTracksAdapter {
-        if (clickListItemDebounce()) manageOnFavoriteClick()
+    private val favoriteTracksAdapter: FavoriteTracksAdapter = FavoriteTracksAdapter { track ->
+        if (clickListItemDebounce()) manageOnFavoriteClick(track)
     }
 
 
@@ -76,8 +79,11 @@ class FavoriteTracksFragment: Fragment() {
         favoriteTracksAdapter.notifyDataSetChanged()
     }
 
-    private fun manageOnFavoriteClick() {
-        Toast.makeText(requireContext(), "Click on ITEM", Toast.LENGTH_SHORT).show()
+    private fun manageOnFavoriteClick(track: Track) {
+        findNavController().navigate(
+            R.id.action_mediatekaFragment_to_playerActivity,
+            PlayerActivity.createArgs(createJsonFromTrack(track))
+        )
     }
 
     private fun clickListItemDebounce(): Boolean {

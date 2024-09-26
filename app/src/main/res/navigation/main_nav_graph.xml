@@ -9,7 +9,11 @@
         android:id="@+id/mediatekaFragment"
         android:name="com.practicum.playlistmaker.ui.mediateka.fragments.MediatekaFragment"
         android:label="fragment_mediateka"
-        tools:layout="@layout/fragment_mediateka" />
+        tools:layout="@layout/fragment_mediateka" >
+        <action
+            android:id="@+id/action_mediatekaFragment_to_playerActivity"
+            app:destination="@id/playerActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
