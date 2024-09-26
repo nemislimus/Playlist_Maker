@@ -20,13 +20,13 @@ class FavoriteTracksRepositoryImpl(
     }
 
     override fun getAllFavoriteTracks(): Flow<List<Track>> = flow {
-        favoriteDao.getAllFavoriteTracks().map { entity ->
+        val favTracks = favoriteDao.getAllFavoriteTracks().map { entity ->
             TrackEntity.entityToTrack(entity)
         }
+        emit(favTracks)
     }
 
     override suspend fun getAllFavoriteId(): List<Long> {
         return favoriteDao.getAllFavoriteId()
     }
-
 }

@@ -4,16 +4,22 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.domain.db.api.FavoriteTracksInteractor
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.dpToPx
 import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.convertTimeValueFromLongToString
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
+    private val favoriteInteractor: FavoriteTracksInteractor,
     private val currentTrack: Track,
     private val context: Context,
 ) : ViewModel() {
@@ -29,6 +35,7 @@ class PlayerViewModel(
 
     fun getPlayerStateLiveData(): LiveData<PlayerState> = playerStateLiveData
     fun getPlayerUiStateLiveData(): LiveData<PlayerUiState> = playerUiStateLiveData
+
 
     private fun setPlayerState(playerState: PlayerState = getPlayerState()) {
         playerStateLiveData.postValue(playerState)
@@ -76,23 +83,45 @@ class PlayerViewModel(
         val updateDuration: String = convertTimeValueFromLongToString(track.trackTimeMillis)
 
         return PlayerUiState(
-           trackId = track.trackId,
-           trackName = track.trackName,
-           artistName = track.artistName,
-           trackDuration = updateDuration,
-           coverLink = track.artworkUrl512,
-           coverCornerRadius = RoundedCorners(dpToPx(8f, context)),
-           soundPreview = track.previewUrl,
-           hasCollection = track.collectionName.isNotEmpty(),
-           collectionName = track.collectionName,
-           releaseDate = track.releaseDate.substring(0, 4),
-           genreName = track.primaryGenreName,
-           country = track.country,
+            trackId = track.trackId,
+            trackName = track.trackName,
+            artistName = track.artistName,
+            trackDuration = updateDuration,
+            coverLink = track.artworkUrl512,
+            coverCornerRadius = RoundedCorners(dpToPx(8f, context)),
+            soundPreview = track.previewUrl,
+            hasCollection = track.collectionName.isNotEmpty(),
+            collectionName = track.collectionName,
+            releaseDate = track.releaseDate.substring(0, 4),
+            genreName = track.primaryGenreName,
+            country = track.country,
+            isFavorite = track.isFavorite,
        )
     }
 
     fun setPlayButtonAsPrepared (onChange: () -> Unit) {
         onPrepare = onChange
+    }
+
+    fun onFavoriteClicked() {
+        viewModelScope.launch {
+            if (currentTrack.isFavorite) {
+                withContext(Dispatchers.IO) {
+                    favoriteInteractor.removeFromFavorite(currentTrack)
+                }
+                changeFavoriteState()
+            } else {
+                withContext(Dispatchers.IO) {
+                    favoriteInteractor.addToFavorite(currentTrack)
+                }
+                changeFavoriteState()
+            }
+        }
+    }
+
+    private fun changeFavoriteState() {
+        currentTrack.isFavorite = !currentTrack.isFavorite
+        playerUiStateLiveData.postValue(getUiState())
     }
 
     override fun onCleared() {

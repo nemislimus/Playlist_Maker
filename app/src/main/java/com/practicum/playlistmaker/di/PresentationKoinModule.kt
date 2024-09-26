@@ -14,12 +14,12 @@ val presentationModule = module {
 
     /////////////////////////////////// Search block
     viewModel {
-        TracksViewModel(get(), get())
+        TracksViewModel(get(), get(), get())
     }
 
     /////////////////////////////////// Player block
     viewModel { (track: Track) ->
-        PlayerViewModel(get(), track, get())
+        PlayerViewModel(get(), get(), track, get())
     }
 
     /////////////////////////////////// Settings-Sharing block
@@ -28,8 +28,8 @@ val presentationModule = module {
     }
 
     /////////////////////////////////// Mediateka block
-    viewModel { (noRealData: Boolean) ->
-        FavoriteTracksFragmentViewModel(noRealData)
+    viewModel {
+        FavoriteTracksFragmentViewModel(get())
     }
 
     viewModel { (noRealData: Boolean) ->

@@ -65,6 +65,7 @@ data class TrackEntity(
                 releaseDate = trackEntity.releaseDate,
                 primaryGenreName = trackEntity.primaryGenreName,
                 country = trackEntity.country,
+                isFavorite = true
             )
         }
 

@@ -15,4 +15,5 @@ data class PlayerUiState(
     val releaseDate: String,
     val genreName: String,
     val country: String,
+    val isFavorite: Boolean,
 )

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flow
 class TracksRepositoryImpl(
     private val networkClient: NetworkClient,
     private val tracksStorage: TracksStorage,
-    private val favriteDao: FavoriteTrackDao,
+    private val favoriteDao: FavoriteTrackDao,
 ): TracksRepository {
 
     override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
@@ -53,7 +53,7 @@ class TracksRepositoryImpl(
     }
 
     private suspend fun updateFavoriteStatus(tracks: List<Track>): List<Track> {
-        val favoritesId = favriteDao.getAllFavoriteId().toSet()
+        val favoritesId = favoriteDao.getAllFavoriteId().toSet()
         return tracks.map { track ->
             track.copy(isFavorite = favoritesId.contains(track.trackId))
         }

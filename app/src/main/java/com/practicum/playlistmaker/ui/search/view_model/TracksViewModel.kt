@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.db.api.FavoriteTracksInteractor
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.search.models.TracksState
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class TracksViewModel(
     private val tracksInteractor: TracksInteractor,
+    private val favoriteTracksInteractor: FavoriteTracksInteractor,
     private val context: Context
 ) : ViewModel() {
 
@@ -35,6 +37,13 @@ class TracksViewModel(
 
     init {
         showHistory()
+    }
+
+    suspend fun updateFavoriteStateOnResume(tracks: List<Track>): List<Track> {
+        val favoritesId = favoriteTracksInteractor.getAllFavoriteId().toSet()
+        return tracks.map { track ->
+            track.copy(isFavorite = favoritesId.contains(track.trackId))
+        }
     }
 
     fun searchDebounce(changedText: String) {

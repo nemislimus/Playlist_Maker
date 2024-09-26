@@ -16,7 +16,7 @@ class MediatekaFragmentsAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return when(position) {
-            0 -> FavoriteTracksFragment.newInstance(noData = noData)
+            0 -> FavoriteTracksFragment.newInstance()
             else -> PlaylistsFragment.newInstance(noData = noData)
         }
     }
