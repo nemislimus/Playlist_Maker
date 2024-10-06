@@ -12,13 +12,15 @@ import java.util.Locale
 
 class FavoriteTrackViewHolder(private val binding: TrackListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+
      fun bind(model: Track) {
         val cornerRadiusInPx = dpToPx(2f, itemView.context)
 
         with(binding) {
             tvTrackName.text = model.trackName
             tvTrackArtistName.text = model.artistName
-            tvTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+            tvTrackTime.text = dateFormat.format(model.trackTimeMillis)
         }
 
         Glide.with(itemView)

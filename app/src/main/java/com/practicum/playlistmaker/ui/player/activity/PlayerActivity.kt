@@ -24,10 +24,6 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
     private var timerJob: Job? = null
-//    private val _currentTrack = intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) }
-//    private val currentTrack: Track
-//        get() = _currentTrack!!
-
     private var trackInPlaylist: Boolean = false
     private var trackInFavorites: Boolean = false
 
@@ -52,11 +48,6 @@ class PlayerActivity : AppCompatActivity() {
             trackInPlaylist = !trackInPlaylist
             setButtonState(it, trackInPlaylist)
         }
-
-//        binding.ivAddToFavoritesButton.setOnClickListener {
-//            trackInFavorites = !trackInFavorites
-//            setButtonState(it, trackInFavorites)
-//        }
 
         binding.ivAddToFavoritesButton.setOnClickListener {
             viewModel.onFavoriteClicked()
@@ -190,9 +181,6 @@ class PlayerActivity : AppCompatActivity() {
         when {
             (actionView == binding.ivAddToPlaylistButton) -> (actionView as? ImageView)
                 ?.setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
-
-//            (actionView == binding.ivAddToFavoritesButton) -> (actionView as? ImageView)
-//                ?.setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
         }
     }
 

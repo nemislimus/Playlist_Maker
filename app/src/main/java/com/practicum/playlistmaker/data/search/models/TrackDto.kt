@@ -17,19 +17,28 @@ data class TrackDto(
     companion object {
 
         fun convertToTrack(trackDto: TrackDto): Track {
+            val trackId = trackDto.trackId ?: 0L
+            val trackName = trackDto.trackName ?: ""
+            val artistName = trackDto.artistName ?: ""
+            val trackTimeMillis = trackDto.trackTimeMillis ?: 0L
+            val collectionName = trackDto.collectionName ?: ""
+            val releaseDate = trackDto.releaseDate ?: ""
+            val primaryGenreName = trackDto.primaryGenreName ?: ""
+            val country = trackDto.country ?: ""
             val trackArtworkUrl100 = trackDto.artworkUrl100 ?: ""
             val trackPreviewUrl = trackDto.previewUrl ?: ""
+
             return Track(
-                trackId = trackDto.trackId,
-                trackName = trackDto.trackName,
-                artistName = trackDto.artistName,
-                trackTimeMillis = trackDto.trackTimeMillis,
+                trackId = trackId,
+                trackName = trackName,
+                artistName = artistName,
+                trackTimeMillis = trackTimeMillis,
                 artworkUrl100 = trackArtworkUrl100,
                 previewUrl = trackPreviewUrl,
-                collectionName = trackDto.collectionName,
-                releaseDate = trackDto.releaseDate,
-                primaryGenreName = trackDto.primaryGenreName,
-                country = trackDto.country,
+                collectionName = collectionName,
+                releaseDate = releaseDate,
+                primaryGenreName = primaryGenreName,
+                country = country,
             )
         }
 

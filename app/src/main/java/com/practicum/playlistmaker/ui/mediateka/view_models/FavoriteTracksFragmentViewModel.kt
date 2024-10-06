@@ -21,7 +21,7 @@ class FavoriteTracksFragmentViewModel(
 
     fun getFavoriteTracks() {
         viewModelScope.launch { //this: CoroutineScope
-            favoriteInteractor.getAllFavoriteTracks().flowOn(Dispatchers.IO).collect {
+            favoriteInteractor.getAllFavoriteTracks().collect {
                 tracksFromDb -> _favoriteTracks.update { tracksFromDb }
             }
         }

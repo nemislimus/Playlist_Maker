@@ -13,9 +13,7 @@ import com.practicum.playlistmaker.ui.dpToPx
 import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.convertTimeValueFromLongToString
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
@@ -106,14 +104,10 @@ class PlayerViewModel(
     fun onFavoriteClicked() {
         viewModelScope.launch {
             if (currentTrack.isFavorite) {
-                withContext(Dispatchers.IO) {
-                    favoriteInteractor.removeFromFavorite(currentTrack)
-                }
+                favoriteInteractor.removeFromFavorite(currentTrack)
                 changeFavoriteState()
             } else {
-                withContext(Dispatchers.IO) {
-                    favoriteInteractor.addToFavorite(currentTrack)
-                }
+                favoriteInteractor.addToFavorite(currentTrack)
                 changeFavoriteState()
             }
         }
