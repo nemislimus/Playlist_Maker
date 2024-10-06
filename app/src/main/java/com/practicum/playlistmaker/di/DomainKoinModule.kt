@@ -1,10 +1,14 @@
 package com.practicum.playlistmaker.di
 
 import android.content.Context
+import com.practicum.playlistmaker.data.favorite.FavoriteTracksRepositoryImpl
 import com.practicum.playlistmaker.data.player.MediaPlayerRepositoryImpl
 import com.practicum.playlistmaker.data.search.TracksRepositoryImpl
 import com.practicum.playlistmaker.data.settings.SettingsRepositoryImpl
 import com.practicum.playlistmaker.data.sharing.ExternalNavigatorImlp
+import com.practicum.playlistmaker.domain.db.api.FavoriteTracksInteractor
+import com.practicum.playlistmaker.domain.db.api.FavoriteTracksRepository
+import com.practicum.playlistmaker.domain.db.impl.FavoriteTracksInteractorImpl
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.api.PlayerRepository
 import com.practicum.playlistmaker.domain.player.impl.MediaPlayerInteractorImpl
@@ -28,7 +32,7 @@ val domainModule = module {
     }
 
     factory<TracksRepository> {
-        TracksRepositoryImpl(get(), get())
+        TracksRepositoryImpl(get(), get(), get())
     }
 
     /////////////////////////////////// Player block
@@ -61,4 +65,15 @@ val domainModule = module {
     factory<ExternalNavigator> {
         ExternalNavigatorImlp(get())
     }
+
+    /////////////////////////////////// FavoriteDatabase block
+
+    single<FavoriteTracksRepository> {
+        FavoriteTracksRepositoryImpl(get())
+    }
+
+    factory<FavoriteTracksInteractor> {
+        FavoriteTracksInteractorImpl(get())
+    }
+
 }

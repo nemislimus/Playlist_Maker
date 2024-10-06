@@ -23,10 +23,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
+    private var timerJob: Job? = null
+//    private val _currentTrack = intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) }
+//    private val currentTrack: Track
+//        get() = _currentTrack!!
+
     private var trackInPlaylist: Boolean = false
     private var trackInFavorites: Boolean = false
-
-    private var timerJob: Job? = null
 
     private val viewModel: PlayerViewModel by viewModel{
         parametersOf(intent.getStringExtra(ARGS_TRACK)?.let { createTrackFromJson(it) })
@@ -50,9 +53,13 @@ class PlayerActivity : AppCompatActivity() {
             setButtonState(it, trackInPlaylist)
         }
 
+//        binding.ivAddToFavoritesButton.setOnClickListener {
+//            trackInFavorites = !trackInFavorites
+//            setButtonState(it, trackInFavorites)
+//        }
+
         binding.ivAddToFavoritesButton.setOnClickListener {
-            trackInFavorites = !trackInFavorites
-            setButtonState(it, trackInFavorites)
+            viewModel.onFavoriteClicked()
         }
 
         binding.tbBackFromPlayerButton.setOnClickListener {
@@ -120,6 +127,10 @@ class PlayerActivity : AppCompatActivity() {
             tvTrackReleaseDateValue.text = stateUi.releaseDate
             tvTrackGenreValue.text = stateUi.genreName
             tvTrackCountryValue.text = stateUi.country
+
+            ivAddToFavoritesButton.setImageResource(
+                if (stateUi.isFavorite) R.drawable.added_in_favorites else R.drawable.add_to_favorite
+            )
         }
     }
 
@@ -180,8 +191,8 @@ class PlayerActivity : AppCompatActivity() {
             (actionView == binding.ivAddToPlaylistButton) -> (actionView as? ImageView)
                 ?.setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
 
-            (actionView == binding.ivAddToFavoritesButton) -> (actionView as? ImageView)
-                ?.setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
+//            (actionView == binding.ivAddToFavoritesButton) -> (actionView as? ImageView)
+//                ?.setImageResource(if (state) R.drawable.added_in_favorites else R.drawable.add_to_favorite)
         }
     }
 

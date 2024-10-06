@@ -28,6 +28,8 @@ import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import com.practicum.playlistmaker.ui.search.TrackAdapter
 import com.practicum.playlistmaker.ui.search.models.TracksState
 import com.practicum.playlistmaker.ui.search.view_model.TracksViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -132,6 +134,18 @@ class SearchFragment : Fragment() {
 
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
+        }
+
+        upgradeTracksFavoriteStateOnResume()
+        trackAdapter.notifyDataSetChanged()
+    }
+
+    private fun upgradeTracksFavoriteStateOnResume() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val updatedByFavoriteTracks = async {
+                viewModel.updateFavoriteStateOnResume(trackAdapter.tracks)
+            }
+            trackAdapter.tracks = updatedByFavoriteTracks.await().toMutableList()
         }
     }
 

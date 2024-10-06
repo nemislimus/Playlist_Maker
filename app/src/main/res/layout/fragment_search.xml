@@ -73,7 +73,8 @@
             android:id="@+id/rv_trackList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            tools:listitem="@layout/track_list_item"/>
 
         <include
             android:id="@+id/llPlaceholderLayout"

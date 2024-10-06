@@ -3,6 +3,8 @@ package com.practicum.playlistmaker.di
 import android.content.Context
 import android.media.MediaPlayer
 import com.google.gson.Gson
+import com.practicum.playlistmaker.data.db.FavoriteDataBase
+import com.practicum.playlistmaker.data.db.dao.FavoriteTrackDao
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.TracksStorage
 import com.practicum.playlistmaker.data.search.network.Retrofit
@@ -36,4 +38,10 @@ val dataModule = module {
     factory {
         MediaPlayer()
     }
+
+    /////////////////////////////////// FavoriteDatabase block
+    single<FavoriteTrackDao> {
+        FavoriteDataBase.getFavoriteDatabase(get()).favoriteTrackDao()
+    }
+
 }

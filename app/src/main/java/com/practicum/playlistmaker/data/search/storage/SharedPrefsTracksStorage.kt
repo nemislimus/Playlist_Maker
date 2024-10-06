@@ -12,20 +12,20 @@ class SharedPrefsTracksStorage(
     private val gson: Gson,
 ): TracksStorage {
 
-    override fun saveHistory(historyList: List<TrackDto>) {
+    override suspend fun saveHistory(historyList: List<TrackDto>) {
         sharedPrefs.edit()
             .putString(HISTORY_KEY, createJsonFromTrackDtoList(historyList))
             .apply()
     }
 
-    override fun getHistory(): ArrayList<TrackDto>? {
+    override suspend fun getHistory(): ArrayList<TrackDto>? {
         val restoreTrackList = sharedPrefs.getString(HISTORY_KEY, null)
             ?.let { createTrackDtoListFromJson(it) }
 
         return restoreTrackList
     }
 
-    override fun cleanHistory() {
+    override suspend fun cleanHistory() {
         sharedPrefs.edit()
             .remove(HISTORY_KEY)
             .apply()
