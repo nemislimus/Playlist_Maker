@@ -35,4 +35,21 @@
     <string name="track_country">Страна</string>
     <string name="release_date">Год</string>
     <string name="create_new_playlist_button">Новый плейлист</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="back_from_playlist">Покинуть экран создания плейлиста</string>
+    <string name="create_playlist_name_field_hint">Название*</string>
+    <string name="create_playlist_discription_field_hint">Описание</string>
+    <string name="create_playlist">Создать</string>
+    <string name="add_track_to_playlist">Добавить в плейлист</string>
+    <string name="track_1">трек</string>
+    <string name="track_24">трека</string>
+    <string name="track_other">треков</string>
+    <string name="dialog_title">Завершить создание плейлиста?</string>
+    <string name="dialog_neutral">Отмена</string>
+    <string name="dialog_done">Завершить</string>
+    <string name="dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="cover_base">savedCover_</string>
+    <string name="track_add_to_playlist">Добавлено в плейлист </string>
+    <string name="track_add_collision">Трек уже добавлен в плейлист </string>
+    <string name="track_add_unreal">Невозможно добавить трек</string>
 </resources>

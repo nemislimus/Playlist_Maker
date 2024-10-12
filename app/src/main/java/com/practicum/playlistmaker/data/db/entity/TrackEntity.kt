@@ -16,24 +16,34 @@ data class TrackEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Long = 0L,
+
     @ColumnInfo(name = "track_id")
     val trackId: Long,
+
     @ColumnInfo(name = "track_name")
     val trackName: String,
+
     @ColumnInfo(name = "artist_name")
     val artistName: String,
+
     @ColumnInfo(name = "track_time")
     val trackTimeMillis: Long,
+
     @ColumnInfo(name = "picture_url")
     val artworkUrl100: String,
+
     @ColumnInfo(name = "sound_sample_url")
     val previewUrl: String,
+
     @ColumnInfo(name = "collection_name")
     val collectionName: String,
+
     @ColumnInfo(name = "release_date")
     val releaseDate: String,
+
     @ColumnInfo(name = "genre")
     val primaryGenreName: String,
+
     @ColumnInfo(name = "country")
     val country: String,
 ) {

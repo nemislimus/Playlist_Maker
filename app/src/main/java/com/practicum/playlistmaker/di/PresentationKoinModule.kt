@@ -2,11 +2,11 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.mediateka.view_models.FavoriteTracksFragmentViewModel
+import com.practicum.playlistmaker.ui.mediateka.view_models.NewPlaylistFragmentViewModel
 import com.practicum.playlistmaker.ui.mediateka.view_models.PlaylistsFragmentViewModel
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.practicum.playlistmaker.ui.search.view_model.TracksViewModel
 import com.practicum.playlistmaker.ui.settings.view_model.SettingsViewModel
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -19,7 +19,7 @@ val presentationModule = module {
 
     /////////////////////////////////// Player block
     viewModel { (track: Track) ->
-        PlayerViewModel(get(), get(), track, get())
+        PlayerViewModel(get(), get(), track, get(), get())
     }
 
     /////////////////////////////////// Settings-Sharing block
@@ -32,7 +32,11 @@ val presentationModule = module {
         FavoriteTracksFragmentViewModel(get())
     }
 
-    viewModel { (noRealData: Boolean) ->
-        PlaylistsFragmentViewModel(noRealData)
+    viewModel {
+        PlaylistsFragmentViewModel(get())
+    }
+
+    viewModel {
+        NewPlaylistFragmentViewModel(get())
     }
 }
