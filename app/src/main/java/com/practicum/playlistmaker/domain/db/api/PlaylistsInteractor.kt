@@ -1,13 +1,12 @@
 package com.practicum.playlistmaker.domain.db.api
 
-import android.content.Context
 import android.net.Uri
 import com.practicum.playlistmaker.domain.db.models.Playlist
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistsInteractor {
 
-    suspend fun saveCoverToPrivateStorage(context: Context, uri: Uri, coverIndex: Int): String
+    suspend fun saveCoverToPrivateStorage(uri: Uri, coverIndex: Int): String
 
     suspend fun savePlaylist(playlist: Playlist)
 

@@ -36,7 +36,6 @@ class NewPlaylistFragment: Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var exitDialog: MaterialAlertDialogBuilder
     private lateinit var backPressedCallback: OnBackPressedCallback
 
     private var titleTextWatcher: TextWatcher? = null
@@ -63,17 +62,6 @@ class NewPlaylistFragment: Fragment() {
         // Lock screen rotation
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        // Set exit dialog
-        exitDialog = MaterialAlertDialogBuilder(requireContext(), R.style.DialogTheme)
-            .setTitle(requireContext().getString(R.string.dialog_title))
-            .setMessage(requireContext().getString(R.string.dialog_message))
-            .setNeutralButton(requireContext().getString(R.string.dialog_neutral)) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setPositiveButton(requireContext().getString(R.string.dialog_done)) { _, _ ->
-                exitOnCompletion()
-            }
-
         backPressedCallback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 onExitClick()
@@ -87,7 +75,6 @@ class NewPlaylistFragment: Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val filePath = async(Dispatchers.IO) {
                         newPlaylistFragmentViewModel.saveCoverToPrivateStorage(
-                            requireContext(),
                             uri,
                             existingPlaylistCount
                         )
@@ -189,12 +176,25 @@ class NewPlaylistFragment: Fragment() {
         inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    // Set exit dialog
+    private fun exitDialog(): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(requireContext(), R.style.DialogTheme)
+            .setTitle(requireContext().getString(R.string.dialog_title))
+            .setMessage(requireContext().getString(R.string.dialog_message))
+            .setNeutralButton(requireContext().getString(R.string.dialog_neutral)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(requireContext().getString(R.string.dialog_done)) { _, _ ->
+                exitOnCompletion()
+            }
+    }
+
     private fun onExitClick() {
         when(requireActivity()) {
 
             is MainActivity -> {
                 if (checkContentFilling()) {
-                    exitDialog.show()
+                    exitDialog().show()
                 } else {
                     findNavController().navigateUp()
                 }
@@ -202,7 +202,7 @@ class NewPlaylistFragment: Fragment() {
 
             is PlayerActivity -> {
                 if (checkContentFilling()) {
-                    exitDialog.show()
+                    exitDialog().show()
                 } else {
                     parentFragmentManager.popBackStack()
                     (requireActivity() as? FragmentContainerDisabler)?.disableFragmentContainer()

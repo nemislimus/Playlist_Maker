@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import org.koin.java.KoinJavaComponent.getKoin
 import java.io.File
 import java.io.FileOutputStream
 
@@ -75,7 +76,8 @@ class PlaylistsRepositoryImpl(
         )
     }
 
-    override suspend fun saveCoverToPrivateStorage(context: Context, uri: Uri, coverIndex: Int): String {
+    override suspend fun saveCoverToPrivateStorage(uri: Uri, coverIndex: Int): String {
+        val context = getKoin().get<Context>()
         val coverFileNameString = createFileName(context, coverIndex)
 
         val filePath = File(

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.domain.db.impl
 
-import android.content.Context
 import android.net.Uri
 import com.practicum.playlistmaker.domain.db.api.PlaylistsInteractor
 import com.practicum.playlistmaker.domain.db.api.PlaylistsRepository
@@ -24,10 +23,9 @@ class PlaylistsInteractorImpl(
         repository.addTrackIdToPlaylistByName(playlistName, trackId)
 
     override suspend fun saveCoverToPrivateStorage(
-        context: Context,
         uri: Uri,
         coverIndex: Int
     ): String {
-        return repository.saveCoverToPrivateStorage(context,uri,coverIndex)
+        return repository.saveCoverToPrivateStorage(uri, coverIndex)
     }
 }
