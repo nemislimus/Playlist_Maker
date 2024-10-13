@@ -27,9 +27,8 @@ abstract class AppDataBase: RoomDatabase() {
                 AppDataBase::class.java,
                 "favorite_database.db"
             )
-                .fallbackToDestructiveMigration() // Оставил на время разработки
+                .fallbackToDestructiveMigration() // Пока решил оставить
                 .build()
         }
-
     }
 }

@@ -15,5 +15,5 @@ interface PlaylistsRepository {
 
     suspend fun getPlaylistByName(playlistName: String): Playlist?
 
-    suspend fun addTrackToPlaylistByName(playlistName: String, trackId: Long): Int
+    suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int
 }

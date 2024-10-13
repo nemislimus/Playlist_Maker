@@ -20,8 +20,8 @@ class PlaylistsInteractorImpl(
     override suspend fun getPlaylistByName(playlistName: String): Playlist? =
         repository.getPlaylistByName(playlistName)
 
-    override suspend fun addTrackToPlaylistByName(playlistName: String, trackId: Long): Int =
-        repository.addTrackToPlaylistByName(playlistName, trackId)
+    override suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int =
+        repository.addTrackIdToPlaylistByName(playlistName, trackId)
 
     override suspend fun saveCoverToPrivateStorage(
         context: Context,

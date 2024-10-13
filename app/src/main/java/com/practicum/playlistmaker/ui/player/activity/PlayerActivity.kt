@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.ui.player.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -38,8 +37,6 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
     private lateinit var binding: ActivityPlayerBinding
 
     private var timerJob: Job? = null
-    private var trackInPlaylist: Boolean = false
-    private var trackInFavorites: Boolean = false
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private lateinit var currentTrack: Track
@@ -47,11 +44,7 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
     private val playlistsAdapter =
         PlaylistsAdapter(isPlayerPlaylist = true){ playlist ->
             lifecycleScope.launch {
-                val clickJob = launch {
-                    manageClickOnTrackAdding(playlist.playlistName, currentTrack.trackId)
-                }
-                clickJob.join()
-                delay(50)
+                manageClickOnTrackAdding(playlist.playlistName, currentTrack.trackId)
                 viewModel.getPlaylists()
             }
         }
@@ -72,7 +65,6 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         }
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-
             override fun onStateChanged(bottomSheet: View, newState: Int) {
 
                 when (newState) {
@@ -102,8 +94,6 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         }
 
         binding.ivAddToPlaylistButton.setOnClickListener {
-//            trackInPlaylist = !trackInPlaylist
-//            setButtonState(it, trackInPlaylist)
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
@@ -128,7 +118,7 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
             }
         }
 
-        viewModel.apply {
+        with(viewModel) {
             getPlayerUiStateLiveData().observe(this@PlayerActivity) { stateUi ->
                 setUi(stateUi)
             }
@@ -136,13 +126,14 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
             getPlayerStateLiveData().observe(this@PlayerActivity) { playerState ->
                 managePlayer(playerState)
             }
+
+            setPlayButtonAsPrepared { updatePlayButtonAlpha() }
         }
     }
 
     override fun onStart() {
         super.onStart()
         with(viewModel) {
-            setPlayButtonAsPrepared { updatePlayButtonAlpha() }
             preparePlayer()
         }
         //Observe playlists StateFlow
@@ -156,7 +147,35 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
 
     override fun onPause() {
         super.onPause()
-        viewModel.pauseTrack()
+        with(viewModel){
+            if (playerNotStarted){
+                playerNotStarted = false
+                playTrack()
+            }
+            pauseTrack()
+        }
+    }
+
+    override fun disableFragmentContainer() {
+        binding.PlayerFragmentContainer.isVisible = false
+        binding.BottomSheetLayout.root.isVisible = true
+        viewModel.getPlaylists()
+    }
+
+    override fun enableFragmentContainer() {
+        binding.PlayerFragmentContainer.isVisible = true
+        binding.BottomSheetLayout.root.isVisible = false
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(VALUE_TIMER, binding.tvTrackTimer.text.toString())
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val timerValue = savedInstanceState.getString(VALUE_TIMER).toString()
+        binding.tvTrackTimer.text = timerValue
     }
 
     private fun showPlaylists() {
@@ -184,24 +203,6 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         playlistsAdapter.playlists.clear()
         playlistsAdapter.playlists.addAll(playlists)
         playlistsAdapter.notifyDataSetChanged()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(IN_PLAYLIST_VALUE, trackInPlaylist)
-        outState.putBoolean(IN_FAVORITE_VALUE, trackInFavorites)
-        outState.putString(VALUE_TIMER, binding.tvTrackTimer.text.toString())
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        trackInPlaylist = savedInstanceState.getBoolean(IN_PLAYLIST_VALUE)
-        trackInFavorites = savedInstanceState.getBoolean(IN_FAVORITE_VALUE)
-        val timerValue = savedInstanceState.getString(VALUE_TIMER).toString()
-
-        binding.tvTrackTimer.text = timerValue
-        setButtonState(binding.ivAddToPlaylistButton, trackInPlaylist)
-        setButtonState(binding.ivAddToFavoritesButton, trackInFavorites)
     }
 
     private fun setUi(stateUi: PlayerUiState) {
@@ -283,18 +284,11 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         }
     }
 
-    private fun setButtonState(actionView: View, state: Boolean) {
-        when {
-            (actionView == binding.ivAddToPlaylistButton) -> (actionView as? ImageView)
-                ?.setImageResource(if (state) R.drawable.added_in_playlist else R.drawable.add_to_playlist)
-        }
-    }
-
     private suspend fun manageClickOnTrackAdding(playlistName: String, trackId: Long?) {
         if (trackId != null){
-            lifecycleScope.launch {
+            val manageJob = lifecycleScope.launch {
                 val addTrack = async(Dispatchers.IO) {
-                    addTrackToPlaylist(playlistName, trackId)
+                    addTrackIdToPlaylist(playlistName, trackId)
                 }
                 val result = addTrack.await()
 
@@ -305,6 +299,7 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
                     }
                 }
             }
+            manageJob.join()
         }
     }
 
@@ -314,15 +309,16 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
     }
 
     private fun createToastMessage(result: Int, playlistName: String): String {
+        val playlistNameUpd = " $playlistName"
         return when(result) {
-            ADD_TRACK_SUCCESS -> getString(R.string.track_add_to_playlist) + playlistName
-            ADD_TRACK_COLLISION -> getString(R.string.track_add_collision) + playlistName
+            ADD_TRACK_SUCCESS -> getString(R.string.track_add_to_playlist) + playlistNameUpd
+            ADD_TRACK_COLLISION -> getString(R.string.track_add_collision) + playlistNameUpd
             else -> getString(R.string.track_add_unreal)
         }
     }
 
-    private suspend fun addTrackToPlaylist(playlistName: String, trackId: Long): Int {
-        return viewModel.addTrackToPlaylistByName(playlistName, trackId)
+    private suspend fun addTrackIdToPlaylist(playlistName: String, trackId: Long): Int {
+        return viewModel.addTrackIdToPlaylistByName(playlistName, trackId)
     }
 
     private fun darkFadeControl(slideOffset: Float): Float {
@@ -347,24 +343,9 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         private const val VALUE_TIMER = "timer_value"
         private const val TIMER_DELAY = 300L
 
-        private const val IN_PLAYLIST_VALUE = "IN_PLAYLIST_VALUE"
-        private const val IN_FAVORITE_VALUE = "IN_FAVORITE_VALUE"
-
         private const val ARGS_TRACK = "args_movie_id"
 
         fun createArgs(trackJsonString: String): Bundle =
             bundleOf(ARGS_TRACK to trackJsonString)
     }
-
-    override fun disableFragmentContainer() {
-        binding.PlayerFragmentContainer.isVisible = false
-        binding.BottomSheetLayout.root.isVisible = true
-        viewModel.getPlaylists()
-    }
-
-    override fun enableFragmentContainer() {
-        binding.PlayerFragmentContainer.isVisible = true
-        binding.BottomSheetLayout.root.isVisible = false
-    }
 }
-

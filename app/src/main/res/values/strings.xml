@@ -52,4 +52,6 @@
     <string name="track_add_to_playlist">Добавлено в плейлист </string>
     <string name="track_add_collision">Трек уже добавлен в плейлист </string>
     <string name="track_add_unreal">Невозможно добавить трек</string>
+    <string name="playlist_pl">Плейлист</string>
+    <string name="playlist_create">создан</string>
 </resources>

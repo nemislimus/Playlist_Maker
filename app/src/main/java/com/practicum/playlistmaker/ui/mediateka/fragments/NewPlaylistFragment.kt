@@ -131,10 +131,12 @@ class NewPlaylistFragment: Fragment() {
             false
         }
 
+        // GET COVER FOR PLAYLIST
         binding.ivAddPlaylistPhoto.setOnClickListener {
             pickPlaylistCover.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
+        // CREATE PLAYLIST
         binding.CreatePlaylistButton.setOnClickListener {
             val playlist = createPlaylistForSavingToDatabase()
 
@@ -176,7 +178,9 @@ class NewPlaylistFragment: Fragment() {
 
     private fun createToastMessage(): String {
         val plName = binding.EditTitle.text.toString()
-        return "Плейлист $plName создан"
+        val pl = requireContext().getString(R.string.playlist_pl)
+        val cr = requireContext().getString(R.string.playlist_create)
+        return "$pl $plName $cr"
     }
 
     private fun hideSoftKeyboard(view: View) {

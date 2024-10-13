@@ -41,7 +41,7 @@ class PlaylistsRepositoryImpl(
         return playlistsDao.getPlaylistByName(playlistName)?.playlistDtoFromEntity()?.playlistDtoToPlaylist()
     }
 
-    override suspend fun addTrackToPlaylistByName(playlistName: String, trackId: Long): Int {
+    override suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int {
         val entityFromDb = playlistsDao.getPlaylistByName(playlistName)
         if (entityFromDb != null) {
             val trackIdList = entityFromDb.playlistDtoFromEntity().trackIdList

@@ -31,6 +31,7 @@ class PlayerViewModel(
 
     private var playerIsPrepared: Boolean = false
     lateinit var onPrepare: () -> Unit
+    var playerNotStarted = true
 
     private var playerStateLiveData =
         MutableLiveData<PlayerState>()
@@ -60,8 +61,8 @@ class PlayerViewModel(
         }
     }
 
-    suspend fun addTrackToPlaylistByName(playlistName: String, trackId: Long): Int =
-        playlistsInteractor.addTrackToPlaylistByName(playlistName, trackId)
+    suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int =
+        playlistsInteractor.addTrackIdToPlaylistByName(playlistName, trackId)
 
     private fun setPlayerState(playerState: PlayerState = getPlayerState()) {
         playerStateLiveData.postValue(playerState)
