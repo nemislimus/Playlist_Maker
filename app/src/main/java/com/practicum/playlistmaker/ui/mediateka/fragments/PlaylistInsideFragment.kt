@@ -1,0 +1,86 @@
+package com.practicum.playlistmaker.ui.mediateka.fragments
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import com.practicum.playlistmaker.databinding.FragmentPlaylistInsideBinding
+import com.practicum.playlistmaker.domain.db.models.Playlist
+import com.practicum.playlistmaker.ui.mediateka.models.PlaylistsState
+import com.practicum.playlistmaker.ui.mediateka.view_models.PlaylistInsideFragmentViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
+class PlaylistInsideFragment: Fragment() {
+
+    private var _binding: FragmentPlaylistInsideBinding? = null
+    private val binding get() = _binding!!
+
+//    private val playlistsAdapter = PlaylistsAdapter(isPlayerPlaylist = false, null)
+
+    private val playlistInsideFragmentViewModel by viewModel<PlaylistInsideFragmentViewModel>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentPlaylistInsideBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        playlistInsideFragmentViewModel.getPlaylists()
+    }
+
+    private fun showPlaylists() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            playlistInsideFragmentViewModel.playlists().collect { playlistsState ->
+//                renderState(playlistsState)
+//            }
+//        }
+    }
+
+    private fun renderState(playlistsState: PlaylistsState) {
+        when(playlistsState) {
+            is PlaylistsState.Loading -> showNoting()
+            is PlaylistsState.Empty -> showPlaceholder()
+            is PlaylistsState.Content -> showContent(playlistsState.playlists)
+        }
+    }
+
+    private fun showNoting() {
+//        binding.rvPlaylists.isVisible = false
+//        binding.playlistsPlaceholderGroup.isVisible = false
+    }
+
+    private fun showPlaceholder() {
+//        binding.rvPlaylists.isVisible = false
+//        binding.playlistsPlaceholderGroup.isVisible = true
+    }
+
+    private fun showContent(playlists: List<Playlist>) {
+//        binding.rvPlaylists.isVisible = true
+//        binding.playlistsPlaceholderGroup.isVisible = false
+//        playlistsAdapter.playlists.clear()
+//        playlistsAdapter.playlists.addAll(playlists)
+//        playlistsAdapter.notifyDataSetChanged()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
+    companion object {
+        fun newInstance() = PlaylistInsideFragment()
+    }
+}
