@@ -18,6 +18,7 @@ import com.practicum.playlistmaker.ui.mediateka.view_models.FavoriteTracksFragme
 import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteTracksFragment: Fragment() {
@@ -75,7 +76,8 @@ class FavoriteTracksFragment: Fragment() {
             binding.rvFavoriteTrackList.isVisible = false
             binding.favoritesPlaceholderGroup.isVisible = true
         }
-        favoriteTracksAdapter.favoriteTracks = tracks.toMutableList()
+        favoriteTracksAdapter.favoriteTracks.clear()
+        favoriteTracksAdapter.favoriteTracks.addAll(tracks)
         favoriteTracksAdapter.notifyDataSetChanged()
     }
 

@@ -90,9 +90,10 @@ class TracksViewModel(
             }
 
             else -> {
+                val tracksWithSample = tracks.filter { track -> track.previewUrl.isNotEmpty() }
                 updateState(
                     TracksState.Content(
-                        tracks = tracks,
+                        tracks = tracksWithSample,
                     )
                 )
             }

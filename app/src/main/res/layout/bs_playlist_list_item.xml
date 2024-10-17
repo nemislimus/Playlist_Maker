@@ -12,13 +12,13 @@
     android:foreground="?attr/selectableItemBackground">
 
     <ImageView
-        android:id="@+id/iv_trackImage"
+        android:id="@+id/iv_playlistImage"
         android:layout_width="@dimen/search_list_image_45dp"
         android:layout_height="@dimen/search_list_image_45dp"
         android:layout_marginVertical="@dimen/classic_size_8dp"
         android:layout_gravity="start|center_vertical"
         android:background="@android:color/transparent"
-        tools:src="@drawable/ic_placeholder_track_image"/>
+        android:src="@drawable/ic_placeholder_track_image"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
 
         <TextView
             style="@style/TrackSmallText.SongName.theme"
-            android:id="@+id/tv_trackName"
+            android:id="@+id/tv_playlistName"
             tools:text="Smells Like Teen Spirit Smells Like Teen Spirit" />
 
         <LinearLayout
@@ -44,34 +44,12 @@
 
             <TextView
                 style="@style/TrackSmallText.theme"
-                android:id="@+id/tv_trackArtistName"
+                android:id="@+id/tv_tracksCount"
                 android:layout_weight="1"
-                tools:text="Smells Like Teen Spirit " />
-
-            <ImageView
-                style="@style/TrackArrowAndDivider"
-                android:id="@+id/iv_trackTime_divider"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_time_divider" />
-
-            <TextView
-                style="@style/TrackSmallText.theme"
-                android:id="@+id/tv_trackTime"
-                tools:text="2:55" />
+                tools:text="98 tracks" />
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <ImageView
-        style="@style/TrackArrowAndDivider"
-        android:id="@+id/iv_trackArrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:background="@android:color/transparent"
-        android:src="@drawable/arrow_forward" />
 
 </androidx.cardview.widget.CardView>

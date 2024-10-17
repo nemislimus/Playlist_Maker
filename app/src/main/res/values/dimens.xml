@@ -26,6 +26,10 @@
     <dimen name="classic_size_16dp">16dp</dimen>
     <dimen name="classic_size_24dp">24dp</dimen>
     <dimen name="classic_size_26dp">26dp</dimen>
+    <dimen name="classic_size_28dp">28dp</dimen>
+    <dimen name="classic_size_32dp">32dp</dimen>
+    <dimen name="classic_size_44dp">44dp</dimen>
+    <dimen name="classic_size_50dp">50dp</dimen>
     <dimen name="classic_size_60dp">60dp</dimen>
     <dimen name="classic_size_106dp">106dp</dimen>
     <dimen name="classic_size_124dp">124dp</dimen>

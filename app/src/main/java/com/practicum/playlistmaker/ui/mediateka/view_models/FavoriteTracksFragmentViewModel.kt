@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.db.api.FavoriteTracksInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -21,7 +19,7 @@ class FavoriteTracksFragmentViewModel(
 
     fun getFavoriteTracks() {
         viewModelScope.launch { //this: CoroutineScope
-            favoriteInteractor.getAllFavoriteTracks().flowOn(Dispatchers.IO).collect {
+            favoriteInteractor.getAllFavoriteTracks().collect {
                 tracksFromDb -> _favoriteTracks.update { tracksFromDb }
             }
         }

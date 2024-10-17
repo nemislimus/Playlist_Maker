@@ -10,7 +10,7 @@ class FavoriteTracksAdapter(
     private val favoriteTrackClickListener: FavoriteTrackClickListener,
 ): RecyclerView.Adapter<FavoriteTrackViewHolder>() {
 
-    var favoriteTracks: MutableList<Track> = arrayListOf()
+    val favoriteTracks: MutableList<Track> = arrayListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteTrackViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

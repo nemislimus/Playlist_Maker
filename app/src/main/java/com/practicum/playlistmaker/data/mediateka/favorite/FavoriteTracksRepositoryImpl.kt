@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.favorite
+package com.practicum.playlistmaker.data.mediateka.favorite
 
 import com.practicum.playlistmaker.data.db.dao.FavoriteTrackDao
 import com.practicum.playlistmaker.data.db.entity.TrackEntity

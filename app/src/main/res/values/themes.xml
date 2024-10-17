@@ -10,6 +10,7 @@
         <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/dark</item>
         <item name="colorOnSecondary">@color/grey</item>
+        <item name="colorAccent">@color/grey_pale</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
@@ -43,6 +44,37 @@
 
     <style name="TrackSmallText.SongName.theme">
         <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="PlaylistEditTextSettings" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/playlist_create_field_stroke</item>
+        <item name="android:textColorHint">?attr/colorSecondaryVariant</item>
+        <item name="hintTextColor">@color/blue</item>
+        <item name="hintTextAppearance">@style/CreatePlaylistFieldText</item>
+    </style>
+
+    <style name="CreatePlaylistFieldText">
+        <item name="android:textSize">@dimen/classic_text_size_12</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <style name="DialogTheme">
+        <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+    </style>
+
+    <style name="Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
 </resources>

@@ -7,25 +7,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.domain.db.api.FavoriteTracksInteractor
+import com.practicum.playlistmaker.domain.db.api.PlaylistsInteractor
+import com.practicum.playlistmaker.domain.db.models.Playlist
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.search.models.Track
 import com.practicum.playlistmaker.ui.dpToPx
 import com.practicum.playlistmaker.domain.player.models.PlayerState
 import com.practicum.playlistmaker.ui.convertTimeValueFromLongToString
+import com.practicum.playlistmaker.ui.mediateka.models.PlaylistsState
 import com.practicum.playlistmaker.ui.player.model.PlayerUiState
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val favoriteInteractor: FavoriteTracksInteractor,
     private val currentTrack: Track,
     private val context: Context,
+    private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
     private var playerIsPrepared: Boolean = false
     lateinit var onPrepare: () -> Unit
+    var playerNotStarted = true
 
     private var playerStateLiveData =
         MutableLiveData<PlayerState>()
@@ -36,6 +42,27 @@ class PlayerViewModel(
     fun getPlayerStateLiveData(): LiveData<PlayerState> = playerStateLiveData
     fun getPlayerUiStateLiveData(): LiveData<PlayerUiState> = playerUiStateLiveData
 
+    private val _playlists = MutableStateFlow<PlaylistsState>(PlaylistsState.Loading)
+    fun playlists() = _playlists.asStateFlow()
+
+    fun getPlaylists() {
+        viewModelScope.launch { //this: CoroutineScope
+            playlistsInteractor.getAllPlaylists().collect {
+                    playlistFromDb -> consumeDbData(playlistFromDb)
+            }
+        }
+    }
+
+    private fun consumeDbData(data: List<Playlist>) {
+        if (data.isNotEmpty()) {
+            _playlists.update { PlaylistsState.Content(data) }
+        } else {
+            _playlists.update { PlaylistsState.Empty }
+        }
+    }
+
+    suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int =
+        playlistsInteractor.addTrackIdToPlaylistByName(playlistName, trackId)
 
     private fun setPlayerState(playerState: PlayerState = getPlayerState()) {
         playerStateLiveData.postValue(playerState)
@@ -106,14 +133,10 @@ class PlayerViewModel(
     fun onFavoriteClicked() {
         viewModelScope.launch {
             if (currentTrack.isFavorite) {
-                withContext(Dispatchers.IO) {
-                    favoriteInteractor.removeFromFavorite(currentTrack)
-                }
+                favoriteInteractor.removeFromFavorite(currentTrack)
                 changeFavoriteState()
             } else {
-                withContext(Dispatchers.IO) {
-                    favoriteInteractor.addToFavorite(currentTrack)
-                }
+                favoriteInteractor.addToFavorite(currentTrack)
                 changeFavoriteState()
             }
         }
@@ -128,5 +151,4 @@ class PlayerViewModel(
         super.onCleared()
         releasePlayer()
     }
-
 }

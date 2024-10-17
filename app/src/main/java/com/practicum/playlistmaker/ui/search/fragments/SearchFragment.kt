@@ -145,7 +145,9 @@ class SearchFragment : Fragment() {
             val updatedByFavoriteTracks = async {
                 viewModel.updateFavoriteStateOnResume(trackAdapter.tracks)
             }
-            trackAdapter.tracks = updatedByFavoriteTracks.await().toMutableList()
+            val updatedTracks = updatedByFavoriteTracks.await()
+            trackAdapter.tracks.clear()
+            trackAdapter.tracks.addAll(updatedTracks)
         }
     }
 
