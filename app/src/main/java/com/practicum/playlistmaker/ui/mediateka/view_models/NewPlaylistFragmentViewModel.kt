@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.domain.db.api.PlaylistsInteractor
 import com.practicum.playlistmaker.domain.db.models.Playlist
 
-class NewPlaylistFragmentViewModel(
+open class NewPlaylistFragmentViewModel(
     private val playlistsInteractor: PlaylistsInteractor
 ): ViewModel() {
 
@@ -13,10 +13,11 @@ class NewPlaylistFragmentViewModel(
         playlistsInteractor.savePlaylist(playlist)
     }
 
-    suspend fun saveCoverToPrivateStorage(uri: Uri, coverIndex: Int): String {
+    suspend fun saveCoverToPrivateStorage(uri: Uri, playlistName: String, renameFile: Boolean): String {
         return playlistsInteractor.saveCoverToPrivateStorage(
             uri,
-            coverIndex
+            playlistName,
+            renameFile
         )
     }
 }

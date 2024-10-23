@@ -34,6 +34,7 @@ class PlaylistsAdapter(
         when(holder) {
             is PlaylistViewHolder -> {
                 holder.bind(playlists[position])
+                holder.itemView.setOnClickListener { itemClickListener?.onItemClick(playlists[position]) }
             }
 
             is PlayerPlaylistViewHolder -> {

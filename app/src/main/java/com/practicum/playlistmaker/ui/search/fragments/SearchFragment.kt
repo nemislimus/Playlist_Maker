@@ -55,6 +55,7 @@ class SearchFragment : Fragment() {
     private var trackAdapter = TrackAdapter(
         { if (clickListItemDebounce()) manageListItemClick(it) },
         { clearHistory() },
+        {/*NO LONG CLICK*/}
     )
 
     // Util variables

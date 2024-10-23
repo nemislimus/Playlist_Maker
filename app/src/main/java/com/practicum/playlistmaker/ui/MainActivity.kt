@@ -28,6 +28,14 @@ class MainActivity : AppCompatActivity() {
                     binding.mainBottomNavigation.isVisible = false
                 }
 
+                R.id.playlistInsideFragment -> {
+                    binding.mainBottomNavigation.isVisible = false
+                }
+
+                R.id.updatePlaylistFragment -> {
+                    binding.mainBottomNavigation.isVisible = false
+                }
+
                 else -> {
                     binding.mainBottomNavigation.isVisible = true
                 }

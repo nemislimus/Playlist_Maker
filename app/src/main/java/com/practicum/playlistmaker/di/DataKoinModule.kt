@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import com.google.gson.Gson
 import com.practicum.playlistmaker.data.db.AppDataBase
 import com.practicum.playlistmaker.data.db.dao.FavoriteTrackDao
+import com.practicum.playlistmaker.data.db.dao.PlaylistTracksDao
 import com.practicum.playlistmaker.data.db.dao.PlaylistsDao
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.TracksStorage
@@ -51,5 +52,9 @@ val dataModule = module {
 
     single<PlaylistsDao> {
         get<AppDataBase>().playlistDao()
+    }
+
+    single<PlaylistTracksDao> {
+        get<AppDataBase>().playlistTrackDao()
     }
 }

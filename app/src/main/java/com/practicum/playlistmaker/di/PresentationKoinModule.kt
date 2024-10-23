@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.ui.mediateka.view_models.FavoriteTracksFragme
 import com.practicum.playlistmaker.ui.mediateka.view_models.NewPlaylistFragmentViewModel
 import com.practicum.playlistmaker.ui.mediateka.view_models.PlaylistInsideFragmentViewModel
 import com.practicum.playlistmaker.ui.mediateka.view_models.PlaylistsFragmentViewModel
+import com.practicum.playlistmaker.ui.mediateka.view_models.UpdatePlaylistFragmentViewModel
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
 import com.practicum.playlistmaker.ui.search.view_model.TracksViewModel
 import com.practicum.playlistmaker.ui.settings.view_model.SettingsViewModel
@@ -41,7 +42,11 @@ val presentationModule = module {
         NewPlaylistFragmentViewModel(get())
     }
 
-    viewModel {
-        PlaylistInsideFragmentViewModel()
+    viewModel {(playlistId: Long) ->
+        UpdatePlaylistFragmentViewModel(get(), playlistId)
+    }
+
+    viewModel { (playlistId: Long) ->
+        PlaylistInsideFragmentViewModel(playlistId, get(), get())
     }
 }

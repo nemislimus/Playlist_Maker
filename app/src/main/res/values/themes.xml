@@ -62,9 +62,21 @@
         <item name="android:textAlignment">viewStart</item>
     </style>
 
+
+    <style name="DeleteDialog" parent="DialogTheme">
+        <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Negative</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Alert.Text</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Alert.Title</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+
     <style name="DialogTheme">
         <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
         <item name="buttonBarNeutralButtonStyle">@style/Alert.Button.Neutral</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Negative</item>
     </style>
 
     <style name="Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
@@ -75,6 +87,21 @@
     <style name="Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/blue</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Alert.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Alert.Title" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:textSize">@dimen/text_size_16sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="Alert.Text" parent="Alert.Title">
+        <item name="android:textSize">@dimen/classic_text_size_14</item>
     </style>
 
 </resources>

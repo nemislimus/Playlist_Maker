@@ -45,6 +45,11 @@ class PlayerViewModel(
     private val _playlists = MutableStateFlow<PlaylistsState>(PlaylistsState.Loading)
     fun playlists() = _playlists.asStateFlow()
 
+    override fun onCleared() {
+        super.onCleared()
+        releasePlayer()
+    }
+
     fun getPlaylists() {
         viewModelScope.launch { //this: CoroutineScope
             playlistsInteractor.getAllPlaylists().collect {
@@ -53,20 +58,12 @@ class PlayerViewModel(
         }
     }
 
-    private fun consumeDbData(data: List<Playlist>) {
-        if (data.isNotEmpty()) {
-            _playlists.update { PlaylistsState.Content(data) }
-        } else {
-            _playlists.update { PlaylistsState.Empty }
-        }
-    }
+    suspend fun addTrackIdToPlaylistById(playlistId: Long, trackId: Long): Int =
+        playlistsInteractor.addTrackIdToPlaylistById(playlistId, trackId)
 
-    suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int =
-        playlistsInteractor.addTrackIdToPlaylistByName(playlistName, trackId)
+    suspend fun saveTrackToPlaylistPool(track: Track) =
+        playlistsInteractor.saveTrackToPlaylistPool(track)
 
-    private fun setPlayerState(playerState: PlayerState = getPlayerState()) {
-        playerStateLiveData.postValue(playerState)
-    }
 
     fun preparePlayer() {
         if (!playerIsPrepared) {
@@ -93,10 +90,6 @@ class PlayerViewModel(
         playerInteractor.pause()
     }
 
-    private fun releasePlayer() {
-        playerInteractor.release()
-    }
-
     fun getCurrentTimerPosition(): String {
         return playerInteractor.getPlayerCurrentTimerPosition()
     }
@@ -105,8 +98,39 @@ class PlayerViewModel(
         return playerInteractor.getPlayerState()
     }
 
-    private fun getUiState(track: Track = currentTrack): PlayerUiState {
+    fun onFavoriteClicked() {
+        viewModelScope.launch {
+            if (currentTrack.isFavorite) {
+                favoriteInteractor.removeFromFavorite(currentTrack)
+                changeFavoriteState()
+            } else {
+                favoriteInteractor.addToFavorite(currentTrack)
+                changeFavoriteState()
+            }
+        }
+    }
 
+    fun setPlayButtonAsPrepared (onChange: () -> Unit) {
+        onPrepare = onChange
+    }
+
+    private fun consumeDbData(data: List<Playlist>) {
+        if (data.isNotEmpty()) {
+            _playlists.update { PlaylistsState.Content(data) }
+        } else {
+            _playlists.update { PlaylistsState.Empty }
+        }
+    }
+
+    private fun setPlayerState(playerState: PlayerState = getPlayerState()) {
+        playerStateLiveData.postValue(playerState)
+    }
+
+    private fun releasePlayer() {
+        playerInteractor.release()
+    }
+
+    private fun getUiState(track: Track = currentTrack): PlayerUiState {
         val updateDuration: String = convertTimeValueFromLongToString(track.trackTimeMillis)
 
         return PlayerUiState(
@@ -126,29 +150,8 @@ class PlayerViewModel(
        )
     }
 
-    fun setPlayButtonAsPrepared (onChange: () -> Unit) {
-        onPrepare = onChange
-    }
-
-    fun onFavoriteClicked() {
-        viewModelScope.launch {
-            if (currentTrack.isFavorite) {
-                favoriteInteractor.removeFromFavorite(currentTrack)
-                changeFavoriteState()
-            } else {
-                favoriteInteractor.addToFavorite(currentTrack)
-                changeFavoriteState()
-            }
-        }
-    }
-
     private fun changeFavoriteState() {
         currentTrack.isFavorite = !currentTrack.isFavorite
         playerUiStateLiveData.postValue(getUiState())
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        releasePlayer()
     }
 }

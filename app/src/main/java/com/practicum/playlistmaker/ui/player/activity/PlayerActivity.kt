@@ -44,7 +44,7 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
     private val playlistsAdapter =
         PlaylistsAdapter(isPlayerPlaylist = true){ playlist ->
             lifecycleScope.launch {
-                manageClickOnTrackAdding(playlist.playlistName, currentTrack.trackId)
+                manageClickOnTrackAdding(playlist.id, playlist.playlistName, currentTrack.trackId)
                 viewModel.getPlaylists()
             }
         }
@@ -110,7 +110,7 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
             supportFragmentManager.commit {
                 add(
                     R.id.PlayerFragmentContainer,
-                    NewPlaylistFragment.newInstance(playlistsAdapter.playlists.size)
+                    NewPlaylistFragment.newInstance()
                 )
                 addToBackStack(NewPlaylistFragment.TAG)
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -284,11 +284,12 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         }
     }
 
-    private suspend fun manageClickOnTrackAdding(playlistName: String, trackId: Long?) {
+    private suspend fun manageClickOnTrackAdding(playlistId: Long, playlistName: String, trackId: Long?) {
         if (trackId != null){
             val manageJob = lifecycleScope.launch {
                 val addTrack = async(Dispatchers.IO) {
-                    addTrackIdToPlaylist(playlistName, trackId)
+                    addTrackToPlaylistPool(currentTrack)
+                    addTrackIdToPlaylist(playlistId, trackId)
                 }
                 val result = addTrack.await()
 
@@ -317,8 +318,11 @@ class PlayerActivity : AppCompatActivity(), FragmentContainerDisabler {
         }
     }
 
-    private suspend fun addTrackIdToPlaylist(playlistName: String, trackId: Long): Int {
-        return viewModel.addTrackIdToPlaylistByName(playlistName, trackId)
+    private suspend fun addTrackToPlaylistPool(track: Track) =
+        viewModel.saveTrackToPlaylistPool(track)
+
+    private suspend fun addTrackIdToPlaylist(playlistId: Long, trackId: Long): Int {
+        return viewModel.addTrackIdToPlaylistById(playlistId, trackId)
     }
 
     private fun darkFadeControl(slideOffset: Float): Float {
