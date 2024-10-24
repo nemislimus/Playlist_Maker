@@ -43,4 +43,5 @@
     <dimen name="search_list_image_45dp">45dp</dimen>
     <dimen name="tabHeight_48dp">48dp</dimen>
     <dimen name="mediateka_placeholder_120dp">120dp</dimen>
+    <dimen name="divider_nav_bar">0.5dp</dimen>
 </resources>
