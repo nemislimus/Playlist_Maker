@@ -42,6 +42,7 @@ data class PlaylistEntity(
 
         fun PlaylistDto.playlistDtoToEntity(): PlaylistEntity {
             return PlaylistEntity(
+                id = this.id,
                 playlistName = this.playlistName,
                 playlistDescription = this.playlistDescription,
                 coverPath = this.coverPath.toString(),
@@ -52,6 +53,7 @@ data class PlaylistEntity(
 
         fun PlaylistEntity.playlistDtoFromEntity(): PlaylistDto {
             return PlaylistDto(
+                id = this.id,
                 playlistName = this.playlistName,
                 playlistDescription = this.playlistDescription,
                 coverPath = Uri.parse(this.coverPath),

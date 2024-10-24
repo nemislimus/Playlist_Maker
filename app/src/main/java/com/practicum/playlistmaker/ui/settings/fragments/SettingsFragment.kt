@@ -43,7 +43,7 @@ class SettingsFragment : Fragment() {
 
         // Share
         binding.shareButton.setOnClickListener {
-            viewModel.shareApp(R.string.link_share_android_dev)
+            viewModel.shareAppMessageOrLink(R.string.link_share_android_dev)
         }
 
         // Email to support
@@ -59,7 +59,6 @@ class SettingsFragment : Fragment() {
         binding.userAgreementButton.setOnClickListener {
             viewModel.openTerms(R.string.link_userAgreementButton)
         }
-
     }
 
     override fun onDestroyView() {

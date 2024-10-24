@@ -9,7 +9,8 @@ import com.practicum.playlistmaker.domain.search.models.Track
 
 class TrackAdapter(
     private val trackClickListener: ItemClickListener,
-    private val buttonClickListener: ItemClickListener
+    private val buttonClickListener: ItemClickListener,
+    private val trackLongClickListener: ItemLongClickListener,
 ): RecyclerView.Adapter<BaseTrackViewHolder>() {
 
     val tracks: MutableList<Track> = arrayListOf()
@@ -29,6 +30,10 @@ class TrackAdapter(
             is TrackViewHolder -> {
                 holder.bind(tracks[position])
                 holder.itemView.setOnClickListener { trackClickListener.onItemClick(tracks[position]) }
+                holder.itemView.setOnLongClickListener {
+                    trackLongClickListener.onItemLongClick(tracks[position])
+                    true
+                }
             }
 
             is ClearHistoryButtonViewHolder -> {
@@ -49,6 +54,10 @@ class TrackAdapter(
 
     fun interface ItemClickListener {
         fun onItemClick(track: Track)
+    }
+
+    fun interface ItemLongClickListener {
+        fun onItemLongClick(track: Track)
     }
 
     companion object {

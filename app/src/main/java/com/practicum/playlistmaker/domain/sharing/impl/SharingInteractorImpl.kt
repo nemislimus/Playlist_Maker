@@ -7,8 +7,13 @@ import com.practicum.playlistmaker.domain.sharing.models.EmailData
 class SharingInteractorImpl(
     private val externalNavigator: ExternalNavigator,
 ) : SharingInteractor {
-    override fun shareApp(linkResourceId: Int) {
-        externalNavigator.shareLink(getShareAppLink(linkResourceId))
+
+    override fun shareAppMessageOrLink(linkOrMessageResourceId: Int) {
+        externalNavigator.shareMessageOrLink(getShareAppLink(linkOrMessageResourceId))
+    }
+
+    override fun sharePlaylist(playlistInfo: String) {
+        externalNavigator.shareMessageOrLink(playlistInfo)
     }
 
     override fun openTerms(linkResourceId: Int) {

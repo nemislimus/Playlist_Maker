@@ -2,17 +2,30 @@ package com.practicum.playlistmaker.domain.db.api
 
 import android.net.Uri
 import com.practicum.playlistmaker.domain.db.models.Playlist
+import com.practicum.playlistmaker.domain.search.models.Track
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistsInteractor {
 
-    suspend fun saveCoverToPrivateStorage(uri: Uri, coverIndex: Int): String
+    suspend fun saveCoverToPrivateStorage(uri: Uri, playlistName: String, renameFile: Boolean): String
+
+    suspend fun deleteCoverFromPrivateStorage(coverPath: String)
 
     suspend fun savePlaylist(playlist: Playlist)
 
+    suspend fun saveTrackToPlaylistPool(track: Track)
+
     fun getAllPlaylists(): Flow<List<Playlist>>
 
-    suspend fun getPlaylistByName(playlistName: String): Playlist?
+    fun getPlaylistTracksFromPool(trackIds: List<Long>): Flow<List<Track>>
 
-    suspend fun addTrackIdToPlaylistByName(playlistName: String, trackId: Long): Int
+    suspend fun getPlaylistById(playlistId: Long): Playlist?
+
+    suspend fun addTrackIdToPlaylistById(playlistId: Long, trackId: Long): Int
+
+    suspend fun deleteTrackFromPlaylist(track: Track, currentPlaylist: Playlist)
+
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun updatePlaylist(playlist: Playlist)
 }

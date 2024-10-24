@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.ui.mediateka.fragments
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,7 +15,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -31,19 +31,18 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment: Fragment() {
+open class NewPlaylistFragment: Fragment() {
 
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
 
     private lateinit var backPressedCallback: OnBackPressedCallback
 
     private var titleTextWatcher: TextWatcher? = null
-    private var coverFilePathString: String = ""
+    var coverFilePathString: String = ""
+    var pickedPhotoUri: Uri? = null
 
-    private var existingPlaylistCount: Int = 0
-
-    private val newPlaylistFragmentViewModel by viewModel<NewPlaylistFragmentViewModel>()
+    open val viewModel by viewModel<NewPlaylistFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,8 +55,6 @@ class NewPlaylistFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        existingPlaylistCount = requireArguments().getInt(PLAYLIST_COUNT_KEY)
 
         // Lock screen rotation
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -72,15 +69,7 @@ class NewPlaylistFragment: Fragment() {
         val pickPlaylistCover = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null)  {
                 binding.ivAddPlaylistPhoto.setImageURI(uri)
-                viewLifecycleOwner.lifecycleScope.launch {
-                    val filePath = async(Dispatchers.IO) {
-                        newPlaylistFragmentViewModel.saveCoverToPrivateStorage(
-                            uri,
-                            existingPlaylistCount
-                        )
-                    }
-                    coverFilePathString = filePath.await()
-                }
+                pickedPhotoUri = uri
             }
         }
 
@@ -125,19 +114,10 @@ class NewPlaylistFragment: Fragment() {
 
         // CREATE PLAYLIST
         binding.CreatePlaylistButton.setOnClickListener {
-            val playlist = createPlaylistForSavingToDatabase()
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                val saveJob = launch(Dispatchers.IO) {
-                    newPlaylistFragmentViewModel.savePlaylist(playlist)
-                }
-                saveJob.join()
-
-                Toast.makeText(requireContext(), createToastMessage(), Toast.LENGTH_SHORT).show()
-                exitOnCompletion()
-            }
+            createPlaylist()
         }
 
+        // BACK FROM NEW PLAYLIST
         binding.tbBackFromNewPlaylist.setOnClickListener {
             onExitClick()
         }
@@ -154,8 +134,42 @@ class NewPlaylistFragment: Fragment() {
         super.onDestroyView()
     }
 
-    private fun createPlaylistForSavingToDatabase(): Playlist =
+    open fun createPlaylist() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            if(pickedPhotoUri != null)
+                saveCover(pickedPhotoUri!!, binding.EditTitle.text.toString(), false)
+
+            val playlist = createPlaylistForSavingToDatabase()
+
+            val saveJob = launch(Dispatchers.IO) {
+                viewModel.savePlaylist(playlist)
+            }
+            saveJob.join()
+
+            Toast.makeText(requireContext(), createToastMessage(), Toast.LENGTH_SHORT).show()
+            exitOnCompletion()
+        }
+    }
+
+    /* renameFile option must be "true" when saveCover() using when editing a playlist,
+    in case the playlist name has been changed, but the cover picture has not been changed.*/
+    suspend fun saveCover(uri: Uri, playlistName: String, renameFile: Boolean) {
+        val saveCoverJob = viewLifecycleOwner.lifecycleScope.launch {
+            val filePath = async(Dispatchers.IO) {
+                viewModel.saveCoverToPrivateStorage(
+                    uri,
+                    playlistName,
+                    renameFile
+                )
+            }
+            coverFilePathString = filePath.await()
+        }
+        saveCoverJob.join()
+    }
+
+    open fun createPlaylistForSavingToDatabase(): Playlist =
         Playlist(
+            id = 0,
             playlistName = binding.EditTitle.text.toString(),
             playlistDescription = binding.EditDescription.text.toString(),
             coverPath = coverFilePathString,
@@ -163,7 +177,7 @@ class NewPlaylistFragment: Fragment() {
             0
         )
 
-    private fun createToastMessage(): String {
+    open fun createToastMessage(): String {
         val plName = binding.EditTitle.text.toString()
         val pl = requireContext().getString(R.string.playlist_pl)
         val cr = requireContext().getString(R.string.playlist_create)
@@ -189,7 +203,7 @@ class NewPlaylistFragment: Fragment() {
             }
     }
 
-    private fun onExitClick() {
+    open fun onExitClick() {
         when(requireActivity()) {
 
             is MainActivity -> {
@@ -229,13 +243,7 @@ class NewPlaylistFragment: Fragment() {
 
     companion object {
         const val TAG = "NPLF"
-        const val PLAYLIST_COUNT_KEY = "count_key"
 
-        fun newInstance(playlistCount: Int) = NewPlaylistFragment().apply {
-            arguments = bundleOf(PLAYLIST_COUNT_KEY to playlistCount)
-        }
-
-        fun createArgs(playlistCount: Int): Bundle =
-            bundleOf(PLAYLIST_COUNT_KEY to playlistCount)
+        fun newInstance() = NewPlaylistFragment()
     }
 }

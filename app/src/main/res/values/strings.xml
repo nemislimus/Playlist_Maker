@@ -54,4 +54,24 @@
     <string name="track_add_unreal">Невозможно добавить трек</string>
     <string name="playlist_pl">Плейлист</string>
     <string name="playlist_create">создан</string>
+    <string name="back_to_playlists">Обратно к плейлистам</string>
+    <string name="playlist_cover_description">Обложка плейлиста</string>
+    <string name="playlist_share_button">Поделиться</string>
+    <string name="playlist_menu_button">Меню плейлиста</string>
+    <string name="playlist_share_menu_button">Поделиться</string>
+    <string name="playlist_edit_menu_button">Редактировать информацию</string>
+    <string name="playlist_delete_menu_button">Удалить плейлист</string>
+    <string name="delete_track_dialog_message">Хотите удалить трек?</string>
+    <string name="delete_track_dialog_title">Удалить трек</string>
+    <string name="delete_dialog_done">ДА</string>
+    <string name="delete_dialog_negative">НЕТ</string>
+    <string name="delete_playlist_dialog_title">Удалить плейлист</string>
+    <string name="delete_playlist_dialog_message">Хотите удалить плейлист?</string>
+    <string name="min">мин</string>
+    <string name="playlist_empty">В плейлисте нет треков!</string>
+    <string name="edit_playlist_title">Редактировать</string>
+    <string name="edit_playlist_edit_button">Сохранить</string>
+    <string name="playlist_edit">отредактирован</string>
+    <string name="no_tracks_in_playlist">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="playlist_menu_image">обложка плейлиста во всплывающем меню</string>
 </resources>

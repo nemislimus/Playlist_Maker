@@ -27,8 +27,8 @@ class SettingsViewModel(
     }
 
 
-    fun shareApp(linkResourceId: Int) {
-        sharingInteractor.shareApp(linkResourceId)
+    fun shareAppMessageOrLink(linkOrMessageResourceId: Int) {
+        sharingInteractor.shareAppMessageOrLink(linkOrMessageResourceId)
     }
 
     fun openTerms(linkResourceId: Int) {
