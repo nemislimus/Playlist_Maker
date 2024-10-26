@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +23,12 @@ class PlaylistsFragment: Fragment() {
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
 
-    private val playlistsAdapter = PlaylistsAdapter(isPlayerPlaylist = false, null)
+    private val playlistsAdapter = PlaylistsAdapter(isPlayerPlaylist = false) { playlist ->
+        findNavController().navigate(
+            R.id.action_mediatekaFragment_to_playlistInsideFragment,
+            bundleOf(PlaylistInsideFragment.PLAYLIST_KEY to  playlist.id)
+        )
+    }
 
     private val playlistsFragmentViewModel by viewModel<PlaylistsFragmentViewModel>()
 
@@ -47,7 +53,6 @@ class PlaylistsFragment: Fragment() {
         binding.createNewPlaylistButton.setOnClickListener {
             findNavController().navigate(
                 R.id.action_mediatekaFragment_to_newPlaylistFragment,
-                NewPlaylistFragment.createArgs(playlistsAdapter.playlists.size)
             )
         }
     }

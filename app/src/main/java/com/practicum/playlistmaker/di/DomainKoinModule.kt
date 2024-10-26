@@ -6,7 +6,7 @@ import com.practicum.playlistmaker.data.mediateka.playlists.PlaylistsRepositoryI
 import com.practicum.playlistmaker.data.player.MediaPlayerRepositoryImpl
 import com.practicum.playlistmaker.data.search.TracksRepositoryImpl
 import com.practicum.playlistmaker.data.settings.SettingsRepositoryImpl
-import com.practicum.playlistmaker.data.sharing.ExternalNavigatorImlp
+import com.practicum.playlistmaker.data.sharing.ExternalNavigatorImpl
 import com.practicum.playlistmaker.domain.db.api.FavoriteTracksInteractor
 import com.practicum.playlistmaker.domain.db.api.FavoriteTracksRepository
 import com.practicum.playlistmaker.domain.db.api.PlaylistsInteractor
@@ -67,7 +67,7 @@ val domainModule = module {
     }
 
     factory<ExternalNavigator> {
-        ExternalNavigatorImlp(get())
+        ExternalNavigatorImpl(get())
     }
 
     /////////////////////////////////// AppDatabase block
@@ -81,7 +81,7 @@ val domainModule = module {
     }
 
     single<PlaylistsRepository> {
-        PlaylistsRepositoryImpl(get())
+        PlaylistsRepositoryImpl(get(), get())
     }
 
     factory<PlaylistsInteractor> {

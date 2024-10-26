@@ -6,11 +6,16 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.PlaylistListItemBinding
 import com.practicum.playlistmaker.domain.db.models.Playlist
 
-class PlaylistViewHolder(private val binding: PlaylistListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class PlaylistViewHolder(private val binding: PlaylistListItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
-     fun bind(model: Playlist) {
+    fun bind(model: Playlist) {
         with(binding) {
-            if (model.coverPath.isNotBlank()) ivPlaylistCover.setImageURI(Uri.parse(model.coverPath))
+            if (model.coverPath.isNotBlank()) {
+                ivPlaylistCover.setImageURI(Uri.parse(model.coverPath))
+            } else {
+                ivPlaylistCover.setImageResource(R.drawable.ic_placeholder_track_image)
+            }
             tvPlaylistTitle.text = model.playlistName
             val tracksCount = "${model.tracksCount} ${getCorrectWord(model.tracksCount)}"
             tvTracksCount.text = tracksCount

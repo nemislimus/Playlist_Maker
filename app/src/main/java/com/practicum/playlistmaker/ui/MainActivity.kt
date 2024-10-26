@@ -26,10 +26,22 @@ class MainActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.newPlaylistFragment -> {
                     binding.mainBottomNavigation.isVisible = false
+                    binding.dividerBottomNavBar.isVisible = false
+                }
+
+                R.id.playlistInsideFragment -> {
+                    binding.mainBottomNavigation.isVisible = false
+                    binding.dividerBottomNavBar.isVisible = false
+                }
+
+                R.id.updatePlaylistFragment -> {
+                    binding.mainBottomNavigation.isVisible = false
+                    binding.dividerBottomNavBar.isVisible = false
                 }
 
                 else -> {
                     binding.mainBottomNavigation.isVisible = true
+                    binding.dividerBottomNavBar.isVisible = true
                 }
             }
         }

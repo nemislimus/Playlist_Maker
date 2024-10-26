@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.domain.db.models.Playlist
 
 
 data class PlaylistDto(
+    val id: Long,
     val playlistName: String,
     val playlistDescription: String,
     val coverPath: Uri,
@@ -16,6 +17,7 @@ data class PlaylistDto(
 
         fun PlaylistDto.playlistDtoToPlaylist(): Playlist {
             return Playlist(
+                id = this.id,
                 playlistName = this.playlistName,
                 playlistDescription = this.playlistDescription,
                 coverPath = this.coverPath.toString(),
@@ -25,12 +27,12 @@ data class PlaylistDto(
 
         fun Playlist.playlistDtoFromPlaylist(): PlaylistDto {
             return PlaylistDto(
+                id = this.id,
                 playlistName = this.playlistName,
                 playlistDescription = this.playlistDescription,
                 coverPath = Uri.parse(this.coverPath),
                 trackIdList = this.trackIdList.toMutableList(),
             )
         }
-
     }
 }

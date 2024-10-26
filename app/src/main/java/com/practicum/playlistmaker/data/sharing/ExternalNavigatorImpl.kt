@@ -11,16 +11,16 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.sharing.api.ExternalNavigator
 import com.practicum.playlistmaker.domain.sharing.models.EmailData
 
-class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
+class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {
 
     override fun getStringResourceById(id: Int): String {
         return context.getString(id)
     }
 
-    override fun shareLink(shareLink: String) {
+    override fun shareMessageOrLink(messageOrLink: String) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, shareLink)
+            putExtra(Intent.EXTRA_TEXT, messageOrLink)
         }
 
         val shareChooser = Intent.createChooser(shareIntent, context.getString(R.string.where_send_link))
@@ -35,7 +35,6 @@ class ExternalNavigatorImlp(private val context: Context) : ExternalNavigator {
                 Toast.LENGTH_LONG
             ).show()
         }
-
     }
 
     override fun openLink(termsLink: String) {

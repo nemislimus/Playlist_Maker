@@ -35,11 +35,20 @@
         app:itemTextAppearanceInactive="@style/BottomMenuText"
         app:itemTextAppearanceActiveBoldEnabled="false"
         app:itemActiveIndicatorStyle="?attr/colorSecondary"
-
+        app:elevation="0dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintTop_toBottomOf="@id/mainContainerView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/dividerBottomNavBar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_nav_bar"
+        android:background="@color/grey_pale"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainContainerView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

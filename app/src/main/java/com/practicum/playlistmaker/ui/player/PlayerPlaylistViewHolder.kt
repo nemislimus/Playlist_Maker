@@ -9,7 +9,8 @@ import com.practicum.playlistmaker.databinding.BsPlaylistListItemBinding
 import com.practicum.playlistmaker.domain.db.models.Playlist
 import com.practicum.playlistmaker.ui.dpToPx
 
-class PlayerPlaylistViewHolder(private val binding: BsPlaylistListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class PlayerPlaylistViewHolder(private val binding: BsPlaylistListItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bind(model: Playlist) {
         val cornerRadiusInPx = dpToPx(2f, itemView.context)
@@ -20,7 +21,7 @@ class PlayerPlaylistViewHolder(private val binding: BsPlaylistListItemBinding) :
             tvTracksCount.text = tracksCount
         }
 
-        if(model.coverPath.isNotBlank()) {
+        if (model.coverPath.isNotBlank()) {
             Glide.with(itemView)
                 .load(model.coverPath)
                 .transform(
@@ -28,6 +29,8 @@ class PlayerPlaylistViewHolder(private val binding: BsPlaylistListItemBinding) :
                 )
                 .placeholder(R.drawable.ic_placeholder_track_image)
                 .into(binding.ivPlaylistImage)
+        } else {
+            Glide.with(binding.ivPlaylistImage).clear(binding.ivPlaylistImage)
         }
     }
 
