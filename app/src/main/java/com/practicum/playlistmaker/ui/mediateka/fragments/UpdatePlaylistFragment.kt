@@ -65,13 +65,15 @@ class UpdatePlaylistFragment: NewPlaylistFragment() {
                     if(coverAndNameWasChanged) {
                         editPlaylistTitle = binding.EditTitle.text.toString()
                     } else {
-                        saveCover(
-                            Uri.parse(currentPlaylist.coverPath),
-                            binding.EditTitle.text.toString(),
-                            true
-                        )
+                        if(pickedPhotoUri != null) {
+                            saveCover(
+                                Uri.parse(currentPlaylist.coverPath),
+                                binding.EditTitle.text.toString(),
+                                true
+                            )
+                            deleteOldCover()
+                        }
                         editPlaylistTitle = binding.EditTitle.text.toString()
-                        deleteOldCover()
                     }
                 }
 
